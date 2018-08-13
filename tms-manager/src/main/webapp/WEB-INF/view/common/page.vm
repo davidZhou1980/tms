@@ -1,0 +1,21 @@
+<div style="float:left;margin-bottom:9px;">共$page.getCountRecord()条记录，当前第$page.getCurrentPage()/$page.getCountPage()页，每页显示
+      <select id="onePageCount" class="span1" style="margin-right:5px;" onchange="javascript:CommonUtil.gotoPage('$formName', 1)">
+          <option value="10" #if($page.getOnePageCount() == 10) selected="true" #end >10行</option>
+        <option value="20" #if($page.getOnePageCount() == 20) selected="true" #end >20行</option>
+        <option value="50" #if($page.getOnePageCount() == 50) selected="true" #end >50行</option>
+      </select>行。
+</div>
+<div class="pagination pagination-right" style="float:right;">
+  <div class="jump"><span>跳转至第</span><input type="text" id="appendedInputButton" class="span1" placeholder="*共$page.getCountPage()页"><span>页</span><i><a href="#" onclick="javascript:CommonUtil.gotoPageIn('$formName', 'appendedInputButton')">GO!</a></i></div>
+  <ul style="float:right;">
+    <li><a href="#" onclick="javascript:CommonUtil.gotoPage('$formName', $page.getCurrentPage()-1)">上一页</a></li>
+	#foreach($item in [$page.getPageIndex().getStartIndex()..$page.getPageIndex().getEndIndex()])
+    			#if($item != 0 && $item == $page.getCurrentPage())
+    				<li><a href="#" class="hit">$item</a></li>
+    			#elseif($item != 0)
+    				<li><a href="#" onclick="javascript:CommonUtil.gotoPage('$formName', $item)" >$item</a></li>
+    			#end
+    		#end
+    <li><a href="#" onclick="javascript:CommonUtil.gotoPage('$formName', $page.getCurrentPage()+1)">下一页</a></li>
+  </ul>
+</div>

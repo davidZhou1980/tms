@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+ 
+    <!-- ========================= dubbo RESOURCE DEFINITIONS ========================= -->
+    
+    <!-- 提供方应用信息，用于计算依赖关系 -->
+    <dubbo:application name="tms-core"  />
+ 
+    <!-- 使用multicast广播注册中心暴露服务地址 -->
+    <!--  <dubbo:registry address="${zookeeper.address}" />-->
+    <dubbo:registry protocol="zookeeper" address="localhost:2181" />
+ 
+    <!-- 用dubbo协议在20880端口暴露服务 -->
+<!--     <dubbo:protocol host="172.16.3.220" name="dubbo" port="20880" /> -->
+    <dubbo:protocol name="dubbo" host="localhost" port="20880" />
+    
+    <!-- 服务提供者过期时间配置 -->
+    <dubbo:provider timeout="1000000" retries="0" />
+    
+    <!-- 声明需要暴露的服务接口 -->
+    <dubbo:service interface="com.hxshop.tms.api.service.HelloService" ref="helloService"></dubbo:service>
+	<bean id="helloService" class="com.hxshop.tms.core.service.impl.HelloServiceImpl"></bean>
+    <!--
+    <dubbo:service interface="com.rsos.api.service.HelloService" ref="helloService" />
+   	<dubbo:service timeout="100000" interface="com.rsos.api.service.UserService" ref="userService" />
+    -->
+    
+<!--     <dubbo:service interface="com.hxshop.tms.api.service.carriage.CarriageInfoServiceApi" ref="carriageInfoService"></dubbo:service>
+    <dubbo:service interface="com.hxshop.tms.api.service.carriage.CarrierCompanyServiceApi" ref="carrierCompanyService"></dubbo:service>
+    <dubbo:service interface="com.hxshop.tms.api.service.route.RouteMessageServiceApi" ref="routeMessageService"></dubbo:service>
+    <dubbo:service interface="com.hxshop.tms.api.service.region.SystemRegionServiceApi" ref="tmsSystemRegionService"></dubbo:service>
+    <dubbo:service interface="com.hxshop.tms.api.service.comm.SystemCodeServiceApi" ref="tmsSystemCodeService"></dubbo:service>
+    <dubbo:service interface="com.hxshop.tms.api.service.route.RouteInfoServiceApi" ref="routeInfoService"></dubbo:service>
+    <dubbo:service interface="com.hxshop.tms.api.service.carriage.CarriageTrackServiceApi" ref="carriageTrackService"></dubbo:service>
+    <dubbo:service interface="com.hxshop.tms.api.service.carriage.CarriageStatusServiceApi" ref="carriageStatusService"></dubbo:service>
+    <dubbo:service interface="com.hxshop.tms.api.service.carriage.CarriageQuestionServiceApi" ref="carriageQuestionService"></dubbo:service>
+    <dubbo:service interface="com.hxshop.tms.api.service.report.ReportCarriageAmountServiceApi" ref="reportCarriageAmountService"></dubbo:service>
+    <dubbo:service interface="com.hxshop.tms.api.service.report.ReportCarriageTimeServiceApi" ref="reportCarriageTimeService"></dubbo:service>
+ --></beans>
+

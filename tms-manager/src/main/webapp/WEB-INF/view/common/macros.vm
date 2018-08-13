@@ -1,0 +1,30 @@
+## formName 表单名 ajax分页
+#macro(ajaxpage $formName)
+#parse("/common/ajaxpage.vm")
+#end
+## formName 表单名
+#macro(page $formName)
+#parse("/common/page.vm")
+#end
+## show error 
+#macro(getErrorMessage $field)
+    #if($result)
+		#if($result.getFieldError($field))
+			$result.getFieldError($field).getDefaultMessage()
+		#end
+	#end
+#end
+
+## get static source path
+#macro(sourceUrl $path)##
+$!staticSourcePathUtil.sourceUrl($!path)##
+#end##
+## 格式化金钱,四舍五入，两位小数。千位逗号分隔。##
+#macro(moneyFormat $money)##
+$!amountUtil.format($money)##
+#end##
+## 格式化数字,四舍五入，两位小数。
+#macro(numFormat $num)##
+$!amountUtil.numFormat($num)##
+#end##
+

@@ -1,0 +1,24 @@
+@charset "utf-8";
+/* CSS Document */
+*{margin:0; padding:0;  }
+body{ font-family:"宋体",'arial';font-size:12px; color:#000; overflow:hidden;background: #b4e1fe; }
+img{border:0;display:inline;}
+ul,li{list-style:none;}
+
+
+.loginblue{background:url(../images/loginblue.jpg) repeat-x; height:191px; width:100%; position:absolute; z-index:-1;}
+.loginbox{ position:relative; z-index:1; top:0;width: 899px;height: 520px;}
+.loginboxtop{  width:899px; height:287px;top: 0;position: absolute;}
+.logosel{position:absolute;top: 73px;left: -168px;}
+.loginboxtopdiv{width: 542px;margin: 0px auto; padding-top:120px;}
+.loginboxtopdiv p{ text-align:center;  font-size:28px; font-weight:bold; color:#000066; letter-spacing:5px; font-family:"黑体"; }
+.loginboxtopdiv span{ font-family:WebFont; font-size:16px; font-style:italic; color:#027e02; font-weight:100; margin-left:25px;letter-spacing:0px;}
+.loginboxtitle{ background:url(../images/loginboxtitle.png) no-repeat; width:519px; height:39px;position: absolute;top: 170px;z-index: 1;}
+.box{ background:url(../images/box.png) no-repeat; width:542px; height:318px;position: absolute;z-index: 0; top:170px;}
+.box ul ,.box ul li{ float:left;}
+.box ul li{ margin-right:8px; margin-top:10px;}
+.box input{ height:26px;}
+.boxdiv{ margin:60px auto; width:380px; position:relative;}
+.loginbtn{width:95px;  cursor:pointer; position:absolute; left:148px; top:162px;}
+.loginbottom{background:url(../images/loginsele.png) no-repeat; width: 817px;height:334px;position: absolute;bottom:0px;}
+.copy{position: absolute;bottom: 5px;text-align: center;width: 899px; color:#0371ad;}

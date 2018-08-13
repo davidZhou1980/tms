@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Application context definition
+-->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+ 
+    <!-- ========================= RESOURCE DEFINITIONS ========================= -->
+
+    <!-- import the dubbo definition -->
+    
+    <import resource="tms-dubbo-consumer-config.xml"/>
+    <!-- import the service definition -->
+<!--     <import resource="service-config.xml"/> -->
+    <!-- import the schedule definition -->
+<!--     <import resource="redis-config.xml"/> -->
+<!--     <import resource="tms-schedule-config.xml"/> -->
+	
+    <context:component-scan base-package="com">
+            <context:exclude-filter type="regex" expression="com.hxshop.tms.manager.controller.*"/>
+    </context:component-scan>
+    <!-- Configurer that replaces ${...} placeholders with values from a properties file -->
+<!-- 	<bean id="propertyConfigurer"
+		class="com.rsos.comm.util.PropertyUtils">
+		<property name="locations">
+			<list>
+				<value>classpath:config/system.properties</value>
+			</list>
+		</property>
+	</bean> -->
+     <!-- enables scanning for @Transactional annotations 
+    <tx:annotation-driven />
+ 	-->
+ 	<!-- cms vle 配置 -->
+ 	 <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+        <property name="velocityProperties">
+            <props>
+                <prop key="resource.loader">class</prop>
+                <prop key="class.resource.loader.class">
+                    org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+                </prop>
+            </props>
+        </property>
+    </bean>
+
+<!--      <bean id="indexGenerator" class="com.rsos.comm.cms.IndexGenerator">
+        <property name="velocityEngine" ref="velocityEngine"/>
+    </bean> -->
+ 	
+</beans>

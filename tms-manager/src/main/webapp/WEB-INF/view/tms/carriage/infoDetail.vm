@@ -1,0 +1,1264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>运单详细信息</title>
+    #parse("/common/head.vm")
+    <script src="#springUrl('/resource/js/location2.js')"></script>
+    <script src="#springUrl('/resource/js/location3.js')"></script>
+    <script src="#springUrl('/resource/js/constants.js')"></script>
+    <style >
+        #showFee td {
+            text-align : right
+        }
+        .tocenter {
+            text-align : center
+        }
+        .toright {
+            text-align : right
+        }
+        .modal_1 {
+              position: absolute;
+              z-index: 1050;
+              
+              background-color: #ffffff;
+              border: 1px solid #999;
+              border: 1px solid rgba(0, 0, 0, 0.3);
+              *border: 1px solid #999;
+              -webkit-border-radius: 6px;
+                 -moz-border-radius: 6px;
+                      border-radius: 6px;
+              outline: none;
+              -webkit-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+                 -moz-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+                      box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+              -webkit-background-clip: padding-box;
+                 -moz-background-clip: padding-box;
+                      background-clip: padding-box;
+            }
+            
+            .modal_2 {
+              position: absolute;
+              z-index: 1050;
+              
+              background-color: #ffffff;
+              border: 1px solid #999;
+              border: 1px solid rgba(0, 0, 0, 0.3);
+              *border: 1px solid #999;
+              -webkit-border-radius: 6px;
+                 -moz-border-radius: 6px;
+                      border-radius: 6px;
+              outline: none;
+              -webkit-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+                 -moz-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+                      box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+              -webkit-background-clip: padding-box;
+                 -moz-background-clip: padding-box;
+                      background-clip: padding-box;
+            }
+    </style>
+</head>
+
+<body>
+<div class="containerH">
+  <div class="rightdiv" >
+     <div class="contentR" >
+       <div class="tablebox">
+            <ul class="breadcrumb" style="margin-bottom:0px;">
+               
+               <li>运单详细信息</li>
+              </ul>
+              
+            
+              
+       
+       
+            <div class="search" style="margin-bottom:0px;">
+                <div class="title">基本信息</div>
+                <div>
+                #set($infoVo = $data.carriageInfoVo)
+                #set($info = $data.carriageInfoVo.getCarriageInfo())
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="dd">
+                  <tr>
+                    <th width="10%">发货单号</th>
+                    <td width="15%">$!{info.carriageSn}</td>
+                    <th width="10%">订单号</th>
+                    <td width="15%">$!{info.orderSn}</td>
+                    <th width="10%">配送状态</th>
+                    <td width="15%">$!{infoVo.shippmentStatusName}</td>
+                    <th width="10%">问题单状态</th>
+                    <td>#if($!{info.questionStatus} && $!{info.questionStatus}==1) <font color="red"> #end
+                         $!{infoVo.questionStatusName}
+                        #if($!{info.questionStatus} && $!{info.questionStatus}==1) </fond> #end</td>
+                  </tr>
+                  <tr>
+                    
+                    <th>收货人</th>
+                    <td>$!{info.consignee}</td>
+                    <th>电子邮箱</th>
+                    <td>$!{info.email}</td>
+                    <th>电话</th>
+                    <td>$!{info.telephone}</td>
+                    <th>手机</th>
+                    <td>$!{info.mobilephone}</td>
+                  </tr>
+                  <tr>             
+                    <th>收货地址</th>
+                    <td colspan="5">$!{infoVo.countryName} $!{infoVo.provinceName} $!{infoVo.cityName} $!{infoVo.districtName} $!{info.address}</td>
+                    <th>邮编</th>
+                    <td>$!{info.zipcode}</td>                   
+                  </tr>
+                   <tr>             
+                    <th>仓库地址</th>
+                    <td colspan="5">$!{infoVo.wProvinceName} $!{infoVo.wCityName} $!{infoVo.wDistrictName} $!{info.wAddress}</td>   
+                    <th>发货时间</th>
+                    <td>$!dateTimeUtil.format($!{info.shippingTime})</td>               
+                  </tr>
+                  
+                </table>
+                </div> 
+                
+                <div style="overflow-x:auto; margin-top:-1px;">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="grid2" style="margin-top:0">
+                  <tr>
+                    <th colspan="7" style="text-align:left">运单商品信息</th>
+                  </tr>
+                  <tr>
+                    <th>商品名称</th>
+                    <th>商品代码</th>
+                    #*<th>条码</th>*#
+                    <th>箱体积</th>
+                    <th>箱重量</th>
+                    <th>数量</th>
+                    <th>运输安装服务费</th>
+                    <th>安装服务费小计</th>        
+                  </tr>
+                  #*<tr>
+                    <td>泰国进口天然乳胶床垫</td>
+                    <td>112312</td>
+                    <td>12131321</td>
+                    <td>1000cm3</td>
+                    <td>10kg</td>
+                    <td>8</td>
+                    <td>150.00</td>
+                    <td>1200</td>
+                  </tr>
+                  *#
+                  #set($carriageItems = $data.carriageItems)
+                  #foreach($g in $carriageItems)
+                  <tr>
+                    <td>$!{g.pdtName}</td>
+                    <td>$!{g.pdtCode}</td>
+                    #*<td>$!{g.barcode}</td>*#
+                    <td class="toright">#numFormat($!{g.pVolume})cm3</td>
+                    <td class="toright">#numFormat($!{g.pWeight})</td>
+                    <td class="toright">$!{g.qty}</td>
+                    <td class="toright">#moneyFormat($!{g.serviceFee})</td>
+                    #set($rowTotalNum = $amountUtil.parseToBigDecimal($!amountUtil.numFormat($!{g.serviceFee})) * $!{g.qty} )
+                    <td class="toright">#moneyFormat($rowTotalNum)</td>
+                  </tr>
+                  #end
+                  <tr>
+                    <td colspan="7" style="text-align:right"><b>实收运输安装服务费：$!amountUtil.numFormat($!{info.totalServiceFee})</b></td>
+                  </tr>
+                  
+                  
+                </table>
+                </div> 
+                
+                
+            </div>
+            
+            
+            
+            <div class="search" style="margin-bottom:0px;">
+                <div class="title">配送信息</div>
+                <div>
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="dd">
+                  <tr>
+                    <th width="10%">运输线路</th>
+                    <td  colspan="3">
+                        <span id="routeSpan"> $!{info.routeName}</span>
+                        #if($!{info.lockStatus} && $!{info.lockStatus}==1 && $!{info.lockOperator} == $!{data.operatorId})
+                        <a id="xzlx" href="javascript:void(0)">选择线路</a>
+                        #end
+                    </td>
+                    <th width="10%">运输单号</th>
+                    <td width="15%"><span id="carrierSpan"> $!{info.carrierNumber}</span></td>
+                  </tr>
+                  <tr >
+                    <th width="10%">运输公司</th>
+                    <td width="15%"><span id="carrierSpan"> $!{infoVo.carrierCodeName}</span></td>
+                    <th width="10%">配送公司</th>
+                    <td width="15%">
+                        <span id="deliverySpan">$!{infoVo.deliveryCodeName}</span>
+                        <select id="deliverySelect" style="display:none;"></select>
+                        <input type="hidden" id="deliveryCode" value="$!{info.deliveryCode}" />
+                        #if($!{info.lockStatus} && $!{info.lockStatus}==1 && $!{info.lockOperator} == $!{data.operatorId})
+                        <a href="javascript:void(0)" id="editDeliveryBtn" style="padding-left:10px;cursor: pointer; color:grey;font-size:12px;">编辑</a>
+                        <a href="javascript:void(0)" id="saveDeliveryBtn" style="padding-left:10px;cursor: pointer; color:grey;font-size:12px; display:none;">保存</a>
+                        <a href="javascript:void(0)" id="cancelDeliveryBtn" style="padding-left:10px;cursor: pointer; color:grey;font-size:12px; display:none;">取消</a>
+                        #end
+                    </td>
+                    <th width="10%">安装公司</th>
+                    <td>
+                        <span id="installSpan">$!{infoVo.installCodeName}</span>
+                        <select id="installSelect" style="display:none;"></select>
+                        <input type="hidden" id="installCode" value="$!{info.installCode}" />
+                        #if($!{info.lockStatus} && $!{info.lockStatus}==1 && $!{info.lockOperator} == $!{data.operatorId})
+                        <a href="javascript:void(0)" id="editInstallBtn" style="padding-left:10px;cursor: pointer; color:grey;font-size:12px;">编辑</a>
+                        <a href="javascript:void(0)" id="saveInstallBtn" style="padding-left:10px;cursor: pointer; color:grey;font-size:12px; display:none;">保存</a>
+                        <a href="javascript:void(0)" id="cancelInstallBtn" style="padding-left:10px;cursor: pointer; color:grey;font-size:12px; display:none;">取消</a>
+                        #end
+                    </td>
+                  </tr>
+                  
+                </table>
+                </div> 
+                
+                <div style="overflow-x:auto; margin-top:-1px;">
+                <table id="trackInfo" width="100%" border="0" cellspacing="0" cellpadding="0" class="grid2" style="margin-top:0">
+                  <tr>
+                    <th colspan="8" style="text-align:left">物流详细信息 
+                        #if($!{info.lockStatus} && $!{info.lockStatus}==1 && $!{info.lockOperator} == $!{data.operatorId})
+                        <a href="javascript:void(0)" id="editTrackInfo" style="padding-left:10px;cursor: pointer; color:grey;font-size:12px;">编辑</a>
+                        <a href="javascript:void(0)" id="addTrackInfo" style="padding-left:10px;cursor: pointer; color:grey;font-size:12px; display:none;">添加行</a>
+                        <a href="javascript:void(0)" id="saveTrackInfo" style="padding-left:10px;cursor: pointer; color:grey;font-size:12px; display:none;">保存</a>
+                        <a href="javascript:void(0)" id="cancelEditTrackInfo" style="padding-left:10px;cursor: pointer; color:grey;font-size:12px; display:none;">取消</a>
+                        #end
+                    </th>
+                  </tr>
+                  <tr>
+                    <th flag="operate"style="display:none;">操作</th>
+                    <th>日期/时间</th>
+                    <th>物流信息内容</th>
+                  </tr>
+                  <tr id="trackTempletTr" style="display:none;">
+                    <td flag="operate"><a href="javascript:void(0)" onclick="deleteTrackRow(this)">删除</a></td>
+                    <td>
+                        <span flag="timeSpan" style="display:none;"></span>
+                        <input name="displayTime" value="" type="text" class="txtBox" style="width:150px;" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})"/>
+                        <input type="hidden" name="carriageTrackId" value="" />
+                    </td>
+                    <td>
+                        <span flag="messageSpan" style="display:none;"></span>
+                        <input type="text" name="contentMessage" style="width:300px;" value=""/>
+                    </td>
+                  </tr>
+                  #*<tr>
+                    <td>2013-08-02 17:00:00</td>
+                    <td>广东佛山揽件成功</td>                  
+                  </tr> 
+                  <tr>
+                    <td>2013-08-02 17:00:00</td>
+                    <td>广东佛山揽件成功</td>                  
+                  </tr> 
+                  <tr>
+                    <td>2013-08-02 17:00:00</td>
+                    <td>广东佛山揽件成功</td>                  
+                  </tr>
+                  *#
+                  #foreach($track in $data.carriageTracks)
+                    <tr flag="data"  isDeleted="0">
+                        <td flag="operate" style="display:none;"><a href="javascript:void(0)" onclick="deleteTrackRow(this)">删除</a></td>
+                        <td>
+                            <span flag="timeSpan">$!dateTimeUtil.format($!{track.displayTime})</span>
+                            <input name="displayTime" value="$!dateTimeUtil.format($!{track.displayTime})" type="text" class="txtBox" style="display:none;width:150px;" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})"/>
+                            <input type="hidden" name="carriageTrackId" value="$!{track.carriageTrackId}" />
+                        </td>
+                        <td>
+                            <span flag="messageSpan">$!{track.contentMessage}</span>
+                            <input type="text" name="contentMessage" style="display:none;width:300px;" value="$!{track.contentMessage}"/>
+                        </td>                  
+                    </tr>
+                  #end
+                </table>
+                </div> 
+                
+                 <div style="overflow-x:auto; margin-top:-1px;">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="grid2" style="margin-top:0">
+                  <tr>
+                    <th colspan="8" style="text-align:left">费用信息 
+                        #if($!{info.lockStatus} && $!{info.lockStatus}==1 && $!{info.lockOperator} == $!{data.operatorId})
+                        <a href="javascript:void(0)" id="editFee" style="padding-left:10px;cursor: pointer; color:grey;font-size:12px;">编辑</a>
+                        <a href="javascript:void(0)" id="saveEditedFee" style="padding-left:10px;cursor: pointer; color:grey;font-size:12px; display:none;">保存</a>
+                        <a href="javascript:void(0)" id="cancelEditFee" style="padding-left:10px;cursor: pointer; color:grey;font-size:12px; display:none;">取消</a>
+                        #end
+                    </th>
+                  </tr>
+                  <tr>
+                    <th>预计干线运费</th>
+                    <th>实际干线运费</th> 
+                    <th>预计配送运费</th>   
+                    <th>实际配送运费</th> 
+                    <th>预计安装费</th>  
+                    <th>实际安装费</th>                    
+                  </tr>
+                  <tr id="showFee">
+                    <td>#moneyFormat($!{info.estimateCityAmount})</td>
+                    <td>
+                        <span id="span_realCityAmount">#moneyFormat($!{info.realCityAmount})</span>
+                        <input id="input_realCityAmount"maxlength="50" style="display:none" class="txtBox" name="realCityAmount" value="#moneyFormat($!{info.realCityAmount})">
+                    </td> 
+                    <td>#moneyFormat($!{info.estimateDistrictAmount})</td>
+                    <td>
+                        <span id="span_realDistrictAmount">#moneyFormat($!{info.realDistrictAmount})</span>
+                        <input id="input_realDistrictAmount"maxlength="50" style="display:none" class="txtBox" name="realDistrictAmount" value="#moneyFormat($!{info.realDistrictAmount})">
+                    </td> 
+                    <td>#moneyFormat($!{info.estimateInstallAmount})</td>
+                    <td>
+                        <span id="span_realInstallAmount">#moneyFormat($!{info.realInstallAmount})</span>
+                        <input id="input_realInstallAmount"maxlength="50" style="display:none" class="txtBox" name="realInstallAmount" value="#moneyFormat($!{info.realInstallAmount})">
+                    </td>                  
+                  </tr> 
+                              
+                </table>
+                </div> 
+                
+                
+            </div>
+            
+             
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            <div class="search" style=" margin-top:20px;">
+                <div class="title">操作信息</div>
+                <div style="overflow-x:auto;">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="dd">
+                 
+                  <tr>
+                    <th width="90">备注</th>
+                    <td><textarea id="commentText"></textarea></td>
+                      
+                  </tr>
+                  <tr>
+                    <th>操作</th>
+                    <td>
+                        #*<input type="button" value="锁定" class="btn2" /> 
+                        <input type="button" value="解锁" class="btn2" /> 
+                        <input type="button" value="设为问题单" class="btn2" id="wtd" />
+                        <input type="button" value="返回正常单" class="btn2" /> 
+                        <input type="button" value="预约配送" class="btn2" /> 
+                        <input type="button" value="签收" class="btn2" /> 
+                        <input type="button" value="拒收" class="btn2" /> 
+                        <input type="button" value="电话回访" class="btn2" id="wlpf" /> 
+                        <input type="button" value="备注" class="btn2" /> 
+                        *#
+                        #foreach($bottomBtns in $data.btnHtmls.get('bottomBtns') )
+                            $bottomBtns
+                        #end
+                    </td>
+                    
+                  </tr>  
+                              
+                </table>
+                </div> 
+                
+                <div style="overflow-x:auto; margin-top:-1px;">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="grid2" style="margin-top:0">
+                  <tr>
+                    <th width="90">操作者</th>
+                    <th>操作时间</th>
+                    
+                    <th>发货状态</th>
+                   
+                    <th>备注</th>              
+                  </tr>
+                  #*<tr>
+                    <td>小吴</td>
+                    <td>2013-10-21 18:00:00</td>
+                    
+                    <td>已发货</td>
+                    
+                    <td>锁定，缺货</td>
+                  </tr>
+                  *#
+                  #set($orderStatuNum = 0)
+                  #foreach($orderStatu in $data.carriageStatus)
+                  #set($orderStatuNum = $velocityCount)
+                  <tr>
+                    <td>$!{orderStatu.operatorId}</td>
+                    <td>$!dateTimeUtil.format($!{orderStatu.createDatetime})</td>
+                    <td>$!{orderStatu.shippmentStatusName}</td>
+                    <td>$!{orderStatu.comment}</td>
+                  </tr>
+                  #end
+                  #if($orderStatuNum == 0)<tr><td colspan="4"><font color="red">没有操作信息<font> </td></tr>#end
+                </table>
+                </div> 
+            </div>
+            
+            
+            
+            
+            
+            
+            
+           
+            
+            
+            
+            
+            
+                    
+       </div>   
+    </div> 
+  </div>
+</div>
+
+
+<div style="clear:both;"></div>
+<!--选择路线-->
+<div id="xzlxDiv" class="modal_1 hide" style="width:1000px; position:absolute; left:10px; top:10px; display:none;">
+  <div class="modal-header">
+    <button type="button" class="close shaixuan_close" data-dismiss="modal_1" aria-hidden="true" >×</button>
+    <h3 id="myModalLabel">选择路线</h3>
+  </div>
+  <div class="modal-body" style="background:#fff;">
+    
+    <div class="search">
+        <div class="title">查询</div>
+        <div class="searchBox">
+            <div>干线运输公司： 
+                <input type="hidden" id="carriageCompanyQuery" value="$!{info.carrierCode}"/>
+                <select id="carriageCompany" name="carrierCode" disabled ></select></div>
+            <div>配送公司： <select id="deliveryCompany" name="deliveryCode"></select></div>
+            <div>安装公司： <select id="installCompany" name="installCode"></select></div>
+            <div>发货城市<span style="color:red;">*</span>：
+                <input type="hidden" id="startProvinceIdQuery" value="16"/>
+                <input type="hidden" name="startCityIdQuery" value="1228"/>
+                <select id="fromProvince" name="startProvinceId" onchange="changeFromProvince(this.value)" disabled ></select> 省 <select name="startCityId" id="fromCity" disabled ></select> 市  </div>
+            <div>目的城市<span style="color:red;">*</span>： 
+                <select id="toProvince" name="endProvinceId" onchange="changeToProvince(this.value)"></select> 省 <select name="endCityId" id="toCity"></select> 市  </div>
+        </div>
+        <div class="searchBtn">
+            <div class="btn"><div class="icon"><img src="#springUrl('/resource/images/search_icon.png')" /></div><div class="txt">查 询</div></div>
+        </div>
+    </div>
+    
+    
+    <div style="padding:15px; ">
+             <div style=" overflow-x:auto;">
+              <table class="grid2" width="100%">
+                <thead>
+                    <tr>
+                      <th>选择<!--<input type="checkbox" />--></th>
+                      <th>路径名称</th>
+                      <th>干线运输公司</th>      
+                      <th>配送公司</th>
+                      <th>安装公司</th>
+                      <th>发货城市</th>
+                      <th>目的城市</th>
+                    </tr>
+                </thead>
+                <tbody id="routeList">
+                    #*<tr>
+                        <td><input type="radio" name="routeId" value="" /></td>
+                        <td>佛山-上海-居家通</td>
+                        <td>居家通</td>
+                        <td></td>
+                        <td></td>
+                        <td>广东佛山</td>
+                        <td>江苏无锡</td>
+                    </tr>
+                    *#
+                </tbody>
+            </table>
+            </div>
+            </div>
+    
+    
+    
+     
+    <div style="margin:20px 0;">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td width="45%" align="right" style="padding-right:10px;"><div id="selectRoute" class="btn"><div class="icon"><img src="#springUrl('/resource/images/u51_normal.png')" /></div><div class="txt">选 择</div></div></td>
+                <td style="padding-left:10px;"><div class="btn" onclick="toRouteList();"><div class="icon"><img src="#springUrl('/resource/images/u156_normal.png')" /></div><div class="txt">添加路线</div></div></td>
+                <td width="45%"  style="padding-left:20px;" ><div class="btn" id="addReturnbtn"><div class="icon"><img src="#springUrl('/resource/images/back_icon.png')" /></div><div class="txt">取消</div></div></td>
+              </tr>
+            </table>
+      
+            </div>
+  </div>
+  <div class="modal-footer">
+   
+  </div>
+</div>
+
+
+
+
+<!--设为问题单原因-->
+<div id="wtdDiv" class="modal_2 hide" style="width:1000px; min-width:200px; position:absolute; left:40%; top:30%; display:none;">
+  <div class="modal-header">
+    <button type="button" class="close shaixuan_close" data-dismiss="modal_2" aria-hidden="true">×</button>
+    <h3 id="questionModalModalLabel">设为问题单原因</h3>
+  </div>
+  <div class="modal-body" style="background:#fff;">
+    
+    
+    <div>
+    <select id="question_reason"></select>
+    </div>
+    
+    
+    
+    
+    
+     
+    <div class="btn shaixuanok" style="margin:20px auto 5px;"><div class="icon"><img src="#springUrl('/resource/images/ok_icon.png')" /></div><div class="txt">确 定</div></div>
+  </div>
+  <div class="modal-footer">
+   
+  </div>
+</div>
+
+
+
+
+<!--物流公司评分-->
+<div id="wlpfDiv" class="modal hide" style="width:1000px; position:absolute; left:10px; top:10px; display:none;">
+  <div class="modal-header">
+    <button type="button" class="close shaixuan_close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">物流公司评分</h3>
+  </div>
+  <div class="modal-body" style="background:#fff;">
+    
+    
+    <div>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr style="height:25px;">
+        <td width="10%">干线运输公司</td>
+        <td><input type="radio" name="carrierScore" value="1"/> 1分 <input type="radio" name="carrierScore" value="2"/> 2分 <input type="radio" name="carrierScore" value="3" /> 3分 <input type="radio" name="carrierScore" value="4" /> 4分 <input type="radio" name="carrierScore" value="5" /> 5分 </td>
+      </tr>
+      <tr style="height:25px;">
+        <td>配送公司</td>
+        <td><input type="radio" name="deliveryScore" value="1" /> 1分 <input type="radio" name="deliveryScore" value="2" /> 2分 <input type="radio" name="deliveryScore" value="3" /> 3分 <input type="radio" name="deliveryScore" value="4" /> 4分 <input type="radio" name="deliveryScore" value="5" /> 5分 </td>
+      </tr>
+      <tr style="height:25px;">
+        <td>安装公司</td>
+        <td><input type="radio" name="installScore" value="1" /> 1分 <input type="radio" name="installScore" value="2" /> 2分 <input type="radio" name="installScore" value="3" /> 3分 <input type="radio" name="installScore" value="4" /> 4分 <input type="radio" name="installScore" value="5" /> 5分 </td>
+      </tr>
+      <tr style="height:25px;">
+        <td valign="top">备注</td>
+        <td><textarea id="returnVisitComment" style="width:500px; height:50px;"></textarea></td>
+      </tr>
+    </table>
+
+    </div>
+    <div class="btn shaixuanok" style="margin:20px auto 5px;"><div class="icon"><img src="#springUrl('/resource/images/ok_icon.png')" /></div><div class="txt">确 定</div></div>
+  </div>
+  <div class="modal-footer">
+   
+  </div>
+</div>
+
+
+
+
+<div class="modal-backdrop" style="display:none;"></div>
+
+
+<script>
+$(function(){
+        // message 操作msg
+        #if($!{message})
+           CommonUtil.alertinfo("$!{message}");
+        #end
+        // 加载地区联动
+        //loadSelect();
+
+    // 运输线路  选择线路按钮
+    $('#xzlx').click(function(){
+        $('#xzlxDiv').show();
+        $('.modal-backdrop').show();
+        // 获取干线运输公司、配送公司、安装公司
+        getDeliveryCompany(true, "carriageCompany" #if($!{info.carrierCode}) , "$!{info.carrierCode}" #end);
+        getDeliveryCompany(true, "deliveryCompany");
+        getDeliveryCompany(true, "installCompany");
+        // 获取省份
+        getRegionList(true, "fromProvince", 0,16);//默认选择广东省
+        getRegionList(true, "fromCity",16, 1228);//默认选择广东省佛山市
+        
+        getRegionList(true, "toProvince", 0);
+    });
+    
+    $(".searchBtn .btn").click(function(){
+        
+        var startProvinceId = $("#startProvinceIdQuery").val();
+        var startCityId = $("#startCityIdQuery").val();
+        var endProvinceId = $("#toProvince").val();
+        var endCityId = $("#toCity").val();
+        
+        if ("" == startProvinceId) {
+            CommonUtil.alertinfo("发货城市-省份不能为空！");
+            return;
+        }
+        if ("" == startCityId) {
+            CommonUtil.alertinfo("发货城市-市不能为空！");
+            return;
+        }
+        if ("" == endProvinceId) {
+            CommonUtil.alertinfo("目的城市-省份不能为空！");
+            return;
+        }
+        if ("" == endCityId) {
+            CommonUtil.alertinfo("目的城市-市不能为空！");
+            return;
+        }
+        var queryVo = {};
+        queryVo['routeInfoQuery.carrierCode']= $("#carriageCompanyQuery").val();
+        queryVo['routeInfoQuery.deliveryCode'] = $("#deliveryCompany").val();
+        queryVo['routeInfoQuery.installCode'] = $("#installCompany").val();
+        queryVo['routeInfoQuery.startProvinceId'] = startProvinceId;
+        queryVo['routeInfoQuery.startCityId'] = startCityId;
+        queryVo['routeInfoQuery.endProvinceId'] = endProvinceId;
+        queryVo['routeInfoQuery.endCityId'] = endCityId;
+        var url = "#springUrl('/route/infoList.htm')";
+        
+        jQuery.requestJson(url, function(json) {
+                var str = '';
+                var data = json.data;
+                var count = 0;
+                $(data).each(function(i, code) {
+                    count = count + 1;
+                    str += "<tr>";
+                    str += "<td><input type='radio' name='routeId' value='" + code.routeId + "' /></td>";
+                    str += "<td>" + code.routeName + "</td>";
+                    str += "<td>" + code.carrierName + "</td>";
+                    str += "<td>" + code.deliveryName + "</td>";
+                    str += "<td>" + code.installName + "</td>";
+                    str += "<td>" + code.startProvinceName + code.startCityName + "</td>";
+                    str += "<td>" + code.endProvinceName + code.endCityName + "</td>";
+                    str += "</tr>";
+                });
+                if (0 == count) {
+                    str = "<tr><td colspan='7' ><font color='red'>查询不到数据... </font></td></tr>";
+                }
+                $("#routeList").html(str);
+            }, queryVo);
+    });
+    
+    $("#selectRoute").click(function(){
+        var obj = $("#routeList").find("input[name=routeId]:checked");
+        if (obj && obj.length > 0) {
+            var url = "#springUrl('/carriageInfo/updateRouteId.htm')";
+            var jsonParam = getParamStr();
+            jsonParam.comment = "";
+            jsonParam.routeId = $(obj).val();
+            jQuery.requestJson(url, succCallBack, jsonParam);
+        } else {
+            CommonUtil.alertinfo("请选择线路！");
+            return;
+        }
+    });
+    
+    //取消按钮
+    $("#addReturnbtn").click(function(){
+        //清空查询结果
+        $("#routeList").html("");
+         //清空目的城市
+        $("#toCity").html("");
+        //隐藏弹出框
+        $('#xzlxDiv').hide();
+        $('.modal-backdrop').hide();
+    });
+    
+    //关闭选择路线
+    $('.shaixuan_close').click(function(){
+        $(this).parent().parent().hide();
+        $('.modal-backdrop').hide();    
+    });
+    // 编辑物流信息
+    $('#editTrackInfo').click(function(){
+        $('#editTrackInfo').hide();
+        $('#addTrackInfo').show();
+        $('#saveTrackInfo').show();
+        $('#cancelEditTrackInfo').show();
+        $("#trackInfo").find("th[flag=operate]").css("display", "");
+        $("#trackInfo").find("tr[flag=data]").each(function(){
+            var timeSpan = $(this).find("span[flag=timeSpan]");
+            var timeInput = $(this).find("input[name=displayTime]");
+            var messageSpan = $(this).find("span[flag=messageSpan]");
+            var messageInput = $(this).find("input[name=contentMessage]");
+            $(timeInput).val($(timeSpan).html());
+            $(messageInput).val($(messageSpan).html());
+            $(timeSpan).css("display", "none");
+            $(timeInput).css("display", "");
+            $(messageSpan).css("display", "none");
+            $(messageInput).css("display", "");
+            $(this).find("td[flag=operate]").css("display", "");
+            $(this).attr("isDeleted", 0);
+        });
+    });
+    
+    // 添加一行物流信息
+    $("#addTrackInfo").click(function(){
+        var trHtml = "<tr flag='data' isDeleted='0'>";
+        trHtml += $("#trackTempletTr").html();
+        trHtml += "</tr>";
+        $("#trackInfo").append(trHtml);
+    });
+    
+    // 保存物流详细信息
+    $("#saveTrackInfo").click(function(){
+        var trackList = [];
+        var flag = true;
+        $("#trackInfo").find("tr[flag=data]").each(function(){
+            var tmpInfo = {};
+            var timeInputVal = $(this).find("input[name=displayTime]").val();
+            var messageInputVal = $(this).find("input[name=contentMessage]").val();
+            var idInputVal = $(this).find("input[name=carriageTrackId]").val();
+            if ("" == timeInputVal) {
+                CommonUtil.alertinfo("请输入日期/时间！");
+                flag = false;
+                return false;
+            }
+            if ("" == messageInputVal) {
+                CommonUtil.alertinfo("请输入物流信息内容！");
+                flag = false;
+                return false;
+            }
+            var isDeleted = $(this).attr("isDeleted");
+            isDeleted = typeof isDeleted == "undefined" ? 0 : isDeleted;
+            tmpInfo.isDeleted = isDeleted;
+            tmpInfo.carriageTrackId = idInputVal;
+            tmpInfo.displayTime = timeInputVal;
+            tmpInfo.contentMessage = messageInputVal;
+            trackList.push(tmpInfo);
+        });
+        if (!flag) {
+            return;
+        }
+        if (0 == trackList.length) {
+            CommonUtil.alertinfo("请添加物流信息后再保存！");
+            return;
+        }
+        var jsonParam = {};
+        jsonParam.carriageTracks = JSON.stringify(trackList);
+        jsonParam.carriageSn = "$!{info.carriageSn}";
+        
+        var url = "#springUrl('/carriageInfo/updateTrackInfo.htm')";
+        jQuery.requestJson(url, succCallBack, jsonParam);
+    });
+    
+    // 取消编辑物流信息
+    $("#cancelEditTrackInfo").click(function(){
+        $('#editTrackInfo').show();
+        $('#addTrackInfo').hide();
+        $('#saveTrackInfo').hide();
+        $('#cancelEditTrackInfo').hide();
+        $("#trackInfo").find("tr[flag=data]").each(function(){
+            var tmpTrackIdInput = $(this).find("input[name=carriageTrackId]");
+            var tmpTrackId = $(tmpTrackIdInput).val();
+            if ("" == tmpTrackId) {
+                $(this).remove();
+            } else {
+                var timeSpan = $(this).find("span[flag=timeSpan]");
+                var timeInput = $(this).find("input[name=displayTime]");
+                var messageSpan = $(this).find("span[flag=messageSpan]");
+                var messageInput = $(this).find("input[name=contentMessage]");
+                $(timeInput).val($(timeSpan).html());
+                $(messageInput).val($(messageSpan).html());
+                $(timeSpan).css("display", "");
+                $(timeInput).css("display", "none");
+                $(messageSpan).css("display", "");
+                $(messageInput).css("display", "none");
+                $(this).find("td[flag=operate]").css("display", "none");
+                $(this).css("display", "");
+            }
+        });
+        $("#trackInfo").find("th[flag=operate]").css("display", "none");
+    });
+   
+    // 编辑物流信息ok btn
+    $(".trackModifyModalok").click(function(){
+        
+        
+        var orderItemTrs = $("#trackModifyModal").find(".orderItem")
+        var orderItems = new Array();
+        var integerPlusRegex = Constants.integerPlusRegex;//正整数
+        var numberPlusRegex = Constants.numberPlusRegex;//非负数，最多保留两位小数
+        $(orderItemTrs).each(function(i,tr){
+            var orderItem = new Object();
+            var id = $(this).attr("orderItemId");
+            var orderSn = $(this).attr("orderSn");
+            orderItem.orderItemId = id;
+            orderItem.orderSn = orderSn;
+            
+            var price = jQuery.trim($(tr).find(".price").val());
+            var serviceFee = jQuery.trim($(tr).find(".serviceFee").val());
+            var qty = jQuery.trim($(tr).find(".qty").val());
+            var canUserQty = jQuery.trim($(tr).find(".canUseQty").html());
+            if(!integerPlusRegex.test(qty)){
+                CommonUtil.alertinfo("数量只能为正整数！");
+                flag = false;
+                return;
+            }
+            if(canUserQty == ""){
+                canUserQty = 0;
+            }
+            if(qty > canUserQty){
+                CommonUtil.alertinfo("数量不能超出可用数量！");
+                flag = false;
+                return;
+            }
+            if(!numberPlusRegex.test(price)){
+                CommonUtil.alertinfo("价格非负数，最多保留两位小数！");
+                flag = false;
+                return;
+            }
+            if(!numberPlusRegex.test(serviceFee) && serviceFee != "0.00" ){
+                CommonUtil.alertinfo("费用非负数，最多保留两位小数！");
+                flag = false;
+                return;
+            }
+            orderItem.price = price;
+            orderItem.serviceFee = serviceFee;
+            orderItem.qty = qty;
+            
+            orderItems.push(orderItem);
+        });
+        if(!flag){
+            return;
+        }
+        var orderItemJson = {};
+        orderItemJson.orderItems = orderItems;
+        ## console.log(orderItemJson.orderItems);
+        var url = "#springUrl('/orderItem/modifyOrderItem.htm')";
+        jQuery.ajax({
+            url:url,
+            type:"post",
+            dataType:"json",
+            contentType: "application/json; charset=utf-8",
+            data:JSON.stringify(orderItemJson),
+            success : function(json){succCallBack(json)}
+        });
+    });
+    
+    // 编辑物流关闭 btn
+    $("#goodsModify_close").click(function(){
+        $("#goodsModifyModal").hide();
+        $('.modal-backdrop').hide();
+        
+    });
+    
+    // 编辑配送公司
+    $("#editDeliveryBtn").click(function(){
+        $("#editDeliveryBtn").hide();
+        $("#saveDeliveryBtn").show();
+        $("#cancelDeliveryBtn").show();
+        $("#deliverySpan").hide();
+        $("#deliverySelect").show();
+        var selectedValue = $("#deliveryCode").val();
+        getDeliveryCompany(false, "deliverySelect", selectedValue);
+    });
+    // 保存编辑后配送公司
+    $("#saveDeliveryBtn").click(function(){
+        var url = "#springUrl('/carriageInfo/updateDeliveryCode.htm')";
+        var jsonParam = getParamStr();
+        jsonParam.deliveryCode = $("#deliverySelect").val();
+        jQuery.requestJson(url, succCallBack, jsonParam);
+    });
+    // 取消编辑配送公司
+    $("#cancelDeliveryBtn").click(function(){
+        $("#editDeliveryBtn").show();
+        $("#cancelDeliveryBtn").hide();
+        $("#saveDeliveryBtn").hide();
+        $("#deliverySpan").show();
+        $("#deliverySelect").hide();
+    });
+    
+    // 编辑安装公司
+    $("#editInstallBtn").click(function(){
+        $("#editInstallBtn").hide();
+        $("#cancelInstallBtn").show();
+        $("#saveInstallBtn").show();
+        $("#installSpan").hide();
+        $("#installSelect").show();
+        var selectedValue = $("#installCode").val();
+        getDeliveryCompany(false, "installSelect", selectedValue);
+        
+    });
+    // 保存编辑后安装公司
+    $("#saveInstallBtn").click(function(){
+        var url = "#springUrl('/carriageInfo/updateInstallCode.htm')";
+        var jsonParam = getParamStr();
+        jsonParam.installCode = $("#installSelect").val();
+        jQuery.requestJson(url, succCallBack, jsonParam);
+    });
+    // 取消编辑安装公司
+    $("#cancelInstallBtn").click(function(){
+        $("#editInstallBtn").show();
+        $("#cancelInstallBtn").hide();
+        $("#saveInstallBtn").hide();
+        $("#installSpan").show();
+        $("#installSelect").hide();
+    });
+    
+    // 编辑费用
+    $("#editFee").click(function(){
+        $(this).hide();
+        $("#saveEditedFee").show();
+        $("#cancelEditFee").show();
+        $("#showFee").find("span[id^=span_]").each(function(){
+            var spanId = $(this).attr("id");
+            var inputId = spanId.replace("span_", "input_");
+            $("#" + inputId).val($("#" + spanId).html());
+            $(this).hide();
+            $("#" + inputId).show();
+        });
+    });
+    // 保存费用
+    $("#saveEditedFee").click(function(){
+        var integerPlusRegex = Constants.integerPlusRegex;//正整数
+        var numberPlusRegex = Constants.numberPlusRegex;//非负数，最多保留两位小数
+        var realCityAmount = $("#input_realCityAmount").val();
+        var realDistrictAmount = $("#input_realDistrictAmount").val();
+        var realInstallAmount = $("#input_realInstallAmount").val();
+        
+        realCityAmount = jQuery.trim(realCityAmount);
+        realDistrictAmount = jQuery.trim(realDistrictAmount);
+        realInstallAmount = jQuery.trim(realInstallAmount);
+        if (0 == realCityAmount.length) {
+            CommonUtil.alertinfo("实际干线费用不能为空！");
+            return;
+        }
+        if (0 == realDistrictAmount.length) {
+            CommonUtil.alertinfo("实际运输费用不能为空！");
+            return;
+        }
+        if (0 == realInstallAmount.length) {
+            CommonUtil.alertinfo("实际安装费用不能为空！");
+            return;
+        }
+        
+        if(!numberPlusRegex.test(realCityAmount) && realCityAmount != 0.00 ){
+            CommonUtil.alertinfo("实际干线费用非负数，最多保留两位小数！");
+            return;
+        }
+        if(!numberPlusRegex.test(realDistrictAmount) && realDistrictAmount != 0.00 ){
+            CommonUtil.alertinfo("实际运输费用非负数，最多保留两位小数！");
+            return;
+        }
+        if(!numberPlusRegex.test(realInstallAmount) && realInstallAmount != 0.00 ){
+            CommonUtil.alertinfo("实际安装费用非负数，最多保留两位小数！");
+            return;
+        }
+        var jsonParam = getParamStr();
+        jsonParam.realCityAmount = realCityAmount;
+        jsonParam.realDistrictAmount = realDistrictAmount;
+        jsonParam.realInstallAmount = realInstallAmount;
+        var url = "#springUrl('/carriageInfo/updateRealCarriageFee.htm')";
+        jQuery.requestJson(url, succCallBack, jsonParam);
+    });
+    // 取消编辑费用
+    $("#cancelEditFee").click(function(){
+        $(editFee).show();
+        $("#saveEditedFee").hide();
+        $("#cancelEditFee").hide();
+        $("#showFee").find("span[id^=span_]").each(function(){
+            var spanId = $(this).attr("id");
+            var inputId = spanId.replace("span_", "input_");
+            $("#" + inputId).val($("#" + spanId).html());
+            $(this).show();
+            $("#" + inputId).hide();
+        });
+    });
+    
+    // 锁定
+    $("#lockBt").click(function(){
+        var url = "#springUrl('/carriageInfo/lock.htm')";
+        var jsonParam = getParamStr();
+        jQuery.requestJson(url, succCallBack, jsonParam);
+    });
+    // 解锁
+    $("#unLockBt").click(function(){
+        var url = "#springUrl('/carriageInfo/unlock.htm')";
+        var jsonParam = getParamStr();
+        jQuery.requestJson(url, succCallBack, jsonParam);
+    });
+    
+   
+    
+    // 设为问题单
+    $("#questionBt").click(function(){
+        $(".shaixuanok").unbind("click");
+        $(".shaixuanok").click(function(){
+            $("#wtdDiv").hide();
+            $('.modal-backdrop').hide();
+            questionOrder();
+        });
+        $(".questionModal").find('.questionModalModalLabel').html("设为问题单原因");
+        getQuestionList();
+        $("#wtdDiv").css({"width":"auto"});
+        $("#question_reason").css({"width":"auto"});
+        $("#wtdDiv").show();
+        $('.modal-backdrop').show();
+    });
+    
+    // 设为问题单订单
+   var questionOrder = function(){
+        var url = "#springUrl('/carriageInfo/question.htm')";
+        var reasonCode = $("#question_reason").val();
+        var jsonParam = getParamStr();
+        jsonParam.reasonCode = reasonCode;
+        jQuery.requestJson(url, succCallBack, jsonParam);
+    };
+    
+    // 返回正常单
+    $("#unQuestionBt").click(function(){
+        var url = "#springUrl('/carriageInfo/unQuestion.htm')";
+        var jsonParam = getParamStr();
+        jQuery.requestJson(url,succCallBack,jsonParam);
+    });
+    
+    // 预约配送
+    $("#deliveryBt").click(function(){
+        var url = "#springUrl('/carriageInfo/appointDeliver.htm')";
+        var jsonParam = getParamStr();
+        jQuery.requestJson(url, succCallBack, jsonParam);
+    });
+    
+    // 签收
+    $("#acceptBt").click(function(){
+        var url = "#springUrl('/carriageInfo/accept.htm')";
+        var jsonParam = getParamStr();
+        jQuery.requestJson(url, succCallBack, jsonParam);
+    });
+    
+    // 拒收
+    $("#rejectBt").click(function(){
+        var url = "#springUrl('/carriageInfo/reject.htm')";
+        var jsonParam = getParamStr();
+        jQuery.requestJson(url, succCallBack, jsonParam);
+    });
+    
+    // 电话回访
+    $("#telVisitBt").click(function(){
+        $(".shaixuanok").unbind("click");
+        $(".shaixuanok").click(function(){
+            var checkResult = telVisitOrder();
+            if (checkResult) {
+                $("#wlpfDiv").hide();
+                $('.modal-backdrop').hide();
+            }
+        });
+        
+        $("#wlpfDiv").show();
+        $('.modal-backdrop').show();
+    });
+    // 提交回访结果
+    var telVisitOrder = function(){
+        var url = "#springUrl('/carriageInfo/returnVisit.htm')";
+        var carrierScore = $("input[name=carrierScore]:checked").val();
+        var deliveryScore = $("input[name=deliveryScore]:checked").val();
+        var installScore = $("input[name=installScore]:checked").val();
+        if (!carrierScore) {
+            CommonUtil.alertinfo("干线运输公司未评分！");
+            return false;
+        }
+        if (!deliveryScore) {
+            CommonUtil.alertinfo("配送公司未评分！");
+            return false;
+        }
+        if (!installScore) {
+            CommonUtil.alertinfo("安装公司未评分！");
+            return false;
+        }
+        var returnVisitComment = $("#returnVisitComment").val();
+        var jsonParam = getParamStr();
+        jsonParam.comment = returnVisitComment;
+        jsonParam.carrierScore = carrierScore;
+        jsonParam.deliveryScore = deliveryScore;
+        jsonParam.installScore = installScore;
+        jQuery.requestJson(url, succCallBack, jsonParam);
+        return true;
+    };
+    
+    
+    // 沟通
+    $("#linkUpBt").click(function(){
+        var url = "#springUrl('/carriageInfo/comment.htm')";
+        var jsonParam = getParamStr();
+        if (jsonParam.comment == "") {
+            CommonUtil.alertinfo("请填写沟通内容！");
+            return;
+        }
+        jQuery.requestJson(url, succCallBack, jsonParam);
+    });
+       
+        
+    
+});
+    
+    // 页面下方按钮公用获取参数方法
+    function getParamStr(){
+        var str = {};
+        var comment = jQuery.trim($("#commentText").val());
+        
+        var carriageSn = "$!{info.carriageSn}";
+        str.carriageSn = carriageSn;
+        str.comment = comment;
+        return str;
+    };
+    
+    //加载地区方法
+    function loadSelect(){
+        //初始化地区
+        var isLoad=true;
+        var url="#springUrl('/tmsRegion/get.htm')";
+        var provinceId=$!{info.provinceId};
+        var cityId=$!{info.cityId};
+        var districtId=$!{info.districtId};
+        
+        var inv_provinceId=$!{info.wProvinceId};
+        var inv_cityId=$!{info.wCityId};
+        var inv_districtId=$!{info.wDistrictId};
+        
+        // 收货地址
+        var hxlocation = new HXLocation3(
+            "con_provinceId",    //页面上的 省selectID
+            "con_cityId",  //页面上的 市 selectID
+            "con_districtId", ////页面上的 地区selectID
+            provinceId,  //省ID
+            cityId,  //市ID
+            districtId, //地区ID
+            url,  //后台提供ajax的controler地址
+            isLoad,   //是否自动选择好用户的值，
+            "showAddress" //拼接省市区，显示数据的html id
+        );
+        hxlocation.init();
+
+       
+    };
+    
+    
+   
+    //公用ajax callback
+    function succCallBack(json) {
+        if (json.ok) {
+            //location.reload();
+            var carriageSn = "$!{info.carriageSn}";
+            window.location = "#springUrl('/carriageInfo/infoDetail.htm')" +"?carriageSn="+carriageSn;
+        } else {
+            CommonUtil.alertinfo(json.message);
+        }
+    };
+    
+    // 获取配送公司
+    function getDeliveryCompany(isDisplayAll, id, selectedValue) {
+        var url = "#springUrl('/carrierCompany/carrierCompanyList.htm')";
+        jQuery.requestJson(url, function(json) {
+            var str = '';
+            var data = json.data;
+            if (isDisplayAll) {
+                str = "<OPTION value=''>--请选择--</OPTION>";
+            }
+            $(data).each(function(i, code) {
+                str += "<OPTION value='"+code.carrierCode+"'>" + code.carrierName + "</OPTION>";
+            });
+            $("#" + id).html(str);
+            if (selectedValue) {
+                $("#" + id).val(selectedValue);
+            }
+        }, '');
+    }
+    
+    function changeFromProvince(parentRegionId) {
+        if ("" == parentRegionId) {
+            $("#fromCity").html("");
+        } else {
+            getRegionList(true, "fromCity", parentRegionId);
+        }
+    }
+    
+    function changeToProvince(parentRegionId) {
+        if ("" == parentRegionId) {
+            $("#toCity").html("");
+        } else {
+            getRegionList(true, "toCity", parentRegionId);
+        }
+    }
+    
+    // 获取省、市、区
+    function getRegionList(isDisplayAll, id, parentRegionId, selectedValue) {
+        var url = "#springUrl('/tmsRegion/get.htm')";
+        jQuery.requestJson(url, function(json) {
+            var str = '';
+            var data = json.data;
+            if (isDisplayAll) {
+                str = "<OPTION value=''>--请选择--</OPTION>";
+            }
+            $(data).each(function(i, code) {
+                str += "<OPTION value='"+code.regionId+"'>" + code.regionName + "</OPTION>";
+            });
+            $("#" + id).html(str);
+            if (selectedValue) {
+                $("#" + id).val(selectedValue);
+            }
+        }, {region_id : parentRegionId});
+    }
+    
+    // 获取问题单原因
+    function getQuestionList() {
+        var url = "#springUrl('/tmsSystemCode/questionReasonList.htm')";
+        getList("question_reason", url);
+    };
+    
+    
+    //获取list
+    function getList(id, url) {
+        jQuery.requestJson(url, function(json) {
+            var str = '';
+            var data = json.data;
+            $(data).each(function(i, code) {
+                str += "<OPTION value='"+code.codeValueCode+"'>" + code.codeValueName + "</OPTION>";
+            });
+            $("#" + id).html(str);
+        }, '');
+    };
+    
+    // 删除一行物流信息
+    function deleteTrackRow(obj) {
+        var tmpTr = $(obj).parent().parent();
+        var tmpTrackId = $(tmpTr).find("input[name=carriageTrackId]").val();
+        if ("" == tmpTrackId) {
+            $(tmpTr).remove();
+        } else {
+            $(tmpTr).attr("isDeleted", 1);
+            $(tmpTr).css("display", "none");
+        }
+    }
+    
+    //span内显示省市区
+    function showAddress(){
+        var p = $("#con_provinceId").find("option:selected").text();
+        var c = $("#con_cityId").find("option:selected").text();
+        var d = $("#con_districtId").find("option:selected").text();
+        var inv_p = $("#inv_provinceId").find("option:selected").text();
+        var inv_c = $("#inv_cityId").find("option:selected").text();
+        var inv_d = $("#inv_districtId").find("option:selected").text();
+        $("#showAddress").html(p+c+d);
+        $("#inv_showAddress").html(inv_p+inv_c+inv_d);
+    }
+    
+    function toRouteList() {
+        var url = "#springUrl('/routeMessage/set.htm')";
+        window.open(url);
+    }
+</script>
+
+
+</body>
+</html>

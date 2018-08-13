@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Repository and Service layers -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- ========================= Schedule RESOURCE DEFINITIONS ========================= -->
+    <!-- 要调用的工作类 -->
+    <bean id="taskCarriageInfo" class="com.hxshop.tms.manager.task.TaskCarriageInfo"></bean>
+    <bean id="taskCarriageTrack" class="com.hxshop.tms.manager.task.TaskCarriageTrack"></bean>
+    <bean id="taskReportCarriageAmount" class="com.hxshop.tms.manager.task.TaskReportCarriageAmount"></bean>
+    <bean id="taskReportCarriageTime" class="com.hxshop.tms.manager.task.TaskReportCarriageTime"></bean>
+    
+    <!-- 定义调用对象和调用对象的方法 -->
+    <bean id="taskCarriageInfoJob"
+        class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <!-- 调用的类 -->
+        <property name="targetObject">
+            <ref bean="taskCarriageInfo" />
+        </property>
+        <!-- 调用类中的方法 -->
+        <property name="targetMethod">
+            <value>timeoutNotReceiveGoods</value>
+        </property>
+        <!-- 不要并发，如果一个任务未结束不要开启下一个 -->
+        <property name="concurrent" value="false"></property>
+    </bean>
+    
+     <!-- 定义调用对象和调用对象的方法 -->
+    <bean id="taskCarriageTrackJob"
+        class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <!-- 调用的类 -->
+        <property name="targetObject">
+            <ref bean="taskCarriageTrack" />
+        </property>
+        <!-- 调用类中的方法 -->
+        <property name="targetMethod">
+            <value>updateCarriageTrack</value>
+        </property>
+        <!-- 不要并发，如果一个任务未结束不要开启下一个 -->
+        <property name="concurrent" value="false"></property>
+    </bean>
+    
+    <!-- 运单时效报表定时任务调用类和方法设置 -->
+    <bean id="taskReportCarriageTimeJob"
+        class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject">
+            <ref bean="taskReportCarriageTime" />
+        </property>
+        <property name="targetMethod">
+            <value>runReportCarriageTimeSchedule</value>
+        </property>
+        <property name="concurrent" value="false"></property>
+    </bean>
+    
+     <!-- 定义调用对象和调用对象的方法 -->
+    <bean id="taskReportCarriageAmountJob"
+        class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <!-- 调用的类 -->
+        <property name="targetObject">
+            <ref bean="taskReportCarriageAmount" />
+        </property>
+        <!-- 调用类中的方法 -->
+        <property name="targetMethod">
+            <value>addAmountMessage</value>
+        </property>
+        <!-- 不要并发，如果一个任务未结束不要开启下一个 -->
+        <property name="concurrent" value="false"></property>
+    </bean>
+    
+
+    <!-- 定义触发时间 -->
+        <bean id="tasktimeoutNotReceiveGoodsDoTime" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail">
+            <ref bean="taskCarriageInfoJob" />
+        </property>
+        <!-- cron表达式 -->
+        <property name="cronExpression">
+            <value>0 0 0/6 * * ?</value>
+        </property>
+    </bean>
+    
+     <!-- 定义触发时间 -->
+       <bean id="taskCarriageTrackDoTime" class="org.springframework.scheduling.quartz.CronTriggerBean">
+	        <property name="jobDetail">
+	            <ref bean="taskCarriageTrackJob" />
+	        </property>
+	        <!-- cron表达式 -->
+	        <property name="cronExpression">
+	            <value>0 0/30 * * * ?</value>
+	        </property>
+       </bean>
+       
+   <!-- 定义触发时间 -->
+    <bean id="taskReportCarriageAmountDoTime" class="org.springframework.scheduling.quartz.CronTriggerBean">
+            <property name="jobDetail">
+                <ref bean="taskReportCarriageAmountJob" />
+            </property>
+            <!-- cron表达式 -->
+            <property name="cronExpression">
+                <value>0 0 1 * * ?</value>
+            </property>
+    </bean>
+       
+    <bean id="taskReportCarriageTimeDoTime" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail">
+		    <ref bean="taskReportCarriageTimeJob" />
+		</property>
+		<!-- cron表达式 -->
+		<property name="cronExpression">
+		    <value>0 0 2 * * ?</value>
+		</property>
+    </bean>
+    <!-- 总管理类 如果将lazy-init='false'那么容器启动就会执行调度程序 -->
+    <bean id="startTmsQuertz" lazy-init="true" autowire="no"
+        class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="tasktimeoutNotReceiveGoodsDoTime" />
+                <ref bean="taskCarriageTrackDoTime"/>
+                <ref bean="taskReportCarriageAmountDoTime"/>
+                <ref bean="taskReportCarriageTimeDoTime" />
+            </list>
+        </property>
+    </bean>
+    
+</beans>
+
+<!--
+        附表： “0 0 12 * * ?” 每天中午12点触发 “0 15 10 ? * *” 每天上午10:15触发 “0 15 10 * *
+        ?” 每天上午10:15触发 “0 15 10 * * ? *” 每天上午10:15触发 “0 15 10 * * ? 2005″
+        2005年的每天上午10:15触发 “0 * 14 * * ?” 在每天下午2点到下午2:59期间的每1分钟触发 “0 0/5 14 * *
+        ?” 在每天下午2点到下午2:55期间的每5分钟触发 “0 0/5 14-18 * * ?”
+        在每天下午2点到2:55期间和下午6点到6:55期间的每5分钟触发 “0 0-5 14 * * ?”
+        在每天下午2点到下午2:05期间的每1分钟触发 “0 10,44 14 ? 3 WED” 每年三月的星期三的下午2:10和2:44触发 “0
+        15 10 ? * MON-FRI” 周一至周五的上午10:15触发 “0 15 10 15 * ?” 每月15日上午10:15触发 “0
+        15 10 L * ?” 每月最后一日的上午10:15触发 “0 15 10 ? * 6L” 每月的最后一个星期五上午10:15触发 “0
+        15 10 ? * 6L 2002-2005″ 2002年至2005年的每月的最后一个星期五上午10:15触发 “0 15 10 ? *
+        6#3″ 每月的第三个星期五上午10:15触发
+    -->

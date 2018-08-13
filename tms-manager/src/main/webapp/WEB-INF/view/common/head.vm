@@ -1,0 +1,26 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,maximum-scale=1" />
+<link rel="icon" href="#springUrl('/favicon.ico')" type="image/x-icon" />
+<link rel="shortcut icon" href="#springUrl('/favicon.ico')" type="image/x-icon" />
+<link href="#springUrl('/resource/css/style.css')" rel="stylesheet" />
+<link href="#springUrl('/resource/css/jquery.loadmask.css')" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="#springUrl('/resource/css/flex.css')" media="all" />
+<script src="#springUrl('/resource/js/jquery.js')"></script>
+##项目添加js
+<!--<script src="#springUrl('/resource/js/top.js')"></script>
+<script src="#springUrl('/resource/js/left.js')"></script>-->
+<script src="#springUrl('/resource/js/common.js')"></script>
+<!--不要使用 flexigrid.pack.js 因为flexigrid已经修改过-->
+<script type="text/javascript" src="#springUrl('/resource/js/flexigrid.js')"></script>
+
+##公用功能js
+<script language="javascript" type="text/javascript" src="#springUrl('/resource/My97DatePicker/WdatePicker.js')"></script>
+<script src="#springUrl('/resource/js/checkform.js')"></script>
+<script type="text/javascript" src="#springUrl('/resource/js/common-util.js')"></script>
+<script type="text/javascript" src="#springUrl('/resource/js/jquery.loadmask.min.js')"></script>
+<script type="text/javascript">
+var FASTDFS_SERVER="$!FASTDFS_SERVER";
+var URL_PREFIX="$!URL_PREFIX";
+</script>

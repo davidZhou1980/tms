@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>物流信息模板列表</title>
+#parse("/common/head.vm")
+<script src="#springUrl('/resource/js/location.js')"></script>
+<script src="#springUrl('/resource/js/location2.js')"></script>
+
+</head>
+
+<body>
+
+<div class="containerH">
+  <div class="rightdiv" >
+     <div class="contentR" >
+       <div class="tablebox">
+       		<ul class="breadcrumb">
+               <li>首页<span class="divider">></span></li>
+               <li>物流管理<span class="divider">></span></li>
+               <li class="active">物流信息模板列表</li>
+              </ul>
+       
+            <form id="queryForm" name="queryForm"  action="#springUrl('/route/list.htm')" method="post" >
+           		<div class="search">
+                  	<div class="title">查询</div>
+                    <input id="querySortFlag" name="routeInfoQuery.sortFlag" value="$!{routeInfoQuery.sortFlag}"  type="hidden" />
+                    <input id="querySortColumn" name="routeInfoQuery.sortColumn" value="$!{routeInfoQuery.sortColumn}" type="hidden"  />
+                    <input id="querySortType" name="routeInfoQuery.sortType" value="$!{routeInfoQuery.sortType}"  type="hidden"  />
+                    <div class="searchBox">
+                    	<div>干线运输公司：
+                            <select  name="routeInfoQuery.carrierCode" >
+                                <option value=''>请选择</option>
+                                #foreach($compny in $companies)
+                                    <option value="$!{compny.carrierCode}" #if($!{routeInfoQuery.carrierCode}&&$!{routeInfoQuery.carrierCode}==$!{compny.carrierCode}) selected #end>$!{compny.carrierName}</option>
+                                #end
+                            </select>
+                        </div>
+                        <div>配送公司： 
+                            <select name="routeInfoQuery.deliveryCode" >
+                                <option value=''>请选择</option>
+                                #foreach($compny in $companies)
+                                    <option value="$!{compny.carrierCode}" #if($!{routeInfoQuery.deliveryCode}&&$!{routeInfoQuery.deliveryCode}==$!{compny.carrierCode}) selected #end>$!{compny.carrierName}</option>
+                                #end
+                            </select>
+                        </div>
+                        <div>安装公司：
+                            <select name="routeInfoQuery.installCode" >
+                                <option value=''>请选择</option>
+                                #foreach($compny in $companies)
+                                    <option value="$!{compny.carrierCode}" #if($!{routeInfoQuery.installCode}&&$!{routeInfoQuery.installCode}==$!{compny.carrierCode}) selected #end>$!{compny.carrierName}</option>
+                                #end
+                            </select>
+                        </div>
+                    	<div>发货城市： 
+                            <input type="hidden" name="routeInfoQuery.startProvinceId" value="16"/>
+                            <input type="hidden" name="routeInfoQuery.startCityId" value="1228"/>
+                            <select id="startProvinceSelect"  disabled  >
+                                <option value="0">请选择</option>
+                            </select> 省
+                            <select id="startCitySelect"  disabled >
+                                <option value="0">请选择</option>
+                            </select> 市
+                        </div>
+                        <div>目的城市： 
+                            <select id="endProvinceSelect" name="routeInfoQuery.endProvinceId" >
+                                <option value="0">请选择</option>
+                            </select> 省 
+                            <select id="endCitySelect" name="routeInfoQuery.endCityId" >
+                                <option value="0">请选择</option>
+                            </select> 市
+                        </div>
+                    </div>
+                    
+                    <div class="searchBtn">
+                    	<div class="btn" id="queryBtn"><div class="icon"><img src="#springUrl('/resource/images/search_icon.png')" /></div><div class="txt">查 询</div></div>
+                    </div>
+                </div>
+            </form>
+            
+            <div style="padding:15px; ">
+             <div style=" overflow-x:auto;">
+              <table id="settingall" class="grid"  style="margin-top: 0px;overflow-x:visible;">
+                <thead>
+                    <tr >
+                      <th width="280" onclick="sortlist('route_info.route_id',this)">路径名称</th>
+                      <th width="190" onclick="sortlist('route_info.carrier_code',this)">干线运输公司</th>      
+                      <th width="190" onclick="sortlist('route_info.delivery_code',this)">配送公司</th>
+                      <th width="190" onclick="sortlist('route_info.install_code',this)">安装公司</th>
+                      <th width="225" onclick="sortlist('route_info.start_province_id,route_info.start_city_id',this)">发货城市</th>
+                      <th width="225" onclick="sortlist('route_info.end_province_id,route_info.end_city_id',this)">目的城市</th>
+                    </tr>
+                </thead>
+                <tbody>
+                	#foreach($routeInfo in $page.getList())
+                        <tr>
+                            <td><a  href="#" onclick="routeSet($!{routeInfo.routeId})">$!{routeInfo.routeName}</a></td>
+                            <td>$!{routeInfo.carrierName}</td>
+                            <td>$!{routeInfo.deliveryName}</td>
+                            <td>$!{routeInfo.installName}</td>
+                            <td>$!{routeInfo.startProvinceName} ${routeInfo.startCityName}</td> 
+                            <td>$!{routeInfo.endProvinceName} ${routeInfo.endCityName}</td>
+                        </tr>
+                    #end
+                    <tr style="display:none;" id="tr_hidden"><td colspan="6" ><font color="red">查询不到数据... </font></td></tr>
+                    
+                   
+                </tbody>
+            </table>
+            </div>
+            </div>
+            
+            
+             <div class="bottompage">
+                 #page("queryForm")
+            </div>       
+       </div>   
+    </div> 
+  </div>
+</div>
+
+
+<div style="clear:both;"></div>
+
+<script>
+    //<![CDATA[
+    $(function(){
+         initlocation();
+         
+         $('#settingall').flexigrid();
+        
+        //查询按钮
+        $('#queryBtn').click(function(){
+            $("#queryForm").attr("action","#springUrl('/route/list.htm')");
+            CommonUtil.gotoPage("queryForm",1);
+        })
+        
+        #if($page.getCountRecord()==0)
+            $("#tr_hidden").find('div').css({"width":"1685px"});
+            $("#tr_hidden").show();
+        #end
+        
+        init();
+        
+        $(window).resize(function(){
+            init(); 
+        })
+        
+    })
+    //]]>
+    
+    function init(){
+            //var bDivH = parseInt($('.tablebox').height()  - $('.breadcrumb').height() - $('.bottompage').height() -223 );
+            $('.bDiv').css('height','auto');
+            $('.bDiv').css('overflow-y','hidden');
+    }
+    
+    function initlocation(){
+        var isLoad=true;
+        var url="#springUrl('/tmsRegion/get.htm')";
+        //发货城市
+        var hxlocation=new HXLocation(
+            "startProvinceSelect",    //页面上的 省selectID
+            "startCitySelect",  //页面上的 市 selectID
+            "", ////页面上的 地区selectID
+            #if($!{routeInfoQuery.startProvinceId}) $!{routeInfoQuery.startProvinceId} #else 16 #end,  //省ID
+            #if($!{routeInfoQuery.startCityId}) $!{routeInfoQuery.startCityId} #else 1228 #end,  //市ID
+            0, //地区ID
+            url,  //后台提供ajax的controler地址
+            isLoad,//是否自动选择好用户的值，
+            ""//拼接省市区，显示数据的html id
+        );
+        hxlocation.init();
+        //目的城市
+        var hxlocation2=new HXLocation2(
+            "endProvinceSelect",    //页面上的 省selectID
+            "endCitySelect",  //页面上的 市 selectID
+            "", ////页面上的 地区selectID
+            #if($!{routeInfoQuery.endProvinceId}) $!{routeInfoQuery.endProvinceId} #else 0 #end,  //省ID
+            #if($!{routeInfoQuery.endCityId}) $!{routeInfoQuery.endCityId} #else 0 #end,  //市ID
+            0, //地区ID
+            url,  //后台提供ajax的controler地址
+            isLoad,//是否自动选择好用户的值，
+            ""//拼接省市区，显示数据的html id
+        );
+        hxlocation2.init();
+    }
+    
+    //table排序
+    //排序
+    function sortlist(sortcolumn,obj){
+         #if($!{routeInfoQuery.sortFlag})
+        
+            var sortFlag = "$!{routeInfoQuery.sortFlag}";
+            $("#querySortColumn").val(sortcolumn);
+            
+            if(sortFlag == "1"){
+                $("#querySortFlag").val("2");
+                $("#querySortType").val("DESC");
+            }
+            if(sortFlag == "2"){
+                $("#querySortFlag").val("1");
+                $("#querySortType").val("ASC");
+            }        
+        #end
+        $("#routeInfoQueryFrom").attr("action","#springUrl('/route/list.htm')");
+        CommonUtil.gotoPage("queryForm",1);
+    };
+    
+    //跳转到路径设置页面
+    function routeSet(routeId){
+            window.location = "#springUrl('/routeMessage/set.htm?routeId=')"+routeId;
+    }
+
+</script>
+</body>
+</html>

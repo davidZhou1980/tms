@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>运单金额统计报表</title>
+        #parse("/common/head.vm")
+        <script src="#springUrl('/resource/js/location.js')"></script>
+</head>
+
+<body>
+<input id="topMenuIndex" type="hidden" value="5" />
+<input id="leftMenuIndex" type="hidden" value="5-1-6" /><!--页面序号-->
+
+
+
+<div class="containerH">
+  
+  <div class="storemanageleft"></div><!--左侧菜单导入-->
+  
+
+  <div class="rightdiv" >
+     <div class="contentR" >
+       <div class="tablebox">
+       		<ul class="breadcrumb">
+               <li>首页 <span class="divider">></span></li>
+               <li>物流管理 <span class="divider">></span></li>
+               <li class="active">运单金额统计报表</li>
+              </ul>
+            
+            <form id="exportForm" action="#springUrl('/carriageReport/export.htm')" method="post" style="visibility:hidden">
+            </form>
+            <form id="queryForm" name="queryForm"  action="#springUrl('/carriageReport/list.htm')" method="post" >
+           		<div class="search">
+                  	<div class="title">查询</div>
+                    <div class="searchBox">
+                    	<div>运输公司： 
+                             <select name="reportQuery.carrierCode">
+                               <option value=''>请选择</option>
+                                #foreach($compny in $companies)
+                                    <option value="$!{compny.carrierCode}" #if($!{reportQuery.carrierCode}&&$!{reportQuery.carrierCode}==$!{compny.carrierCode}) selected #end>$!{compny.carrierName}</option>
+                                #end
+                            </select>
+                        </div>
+                        <div>目的城市： 
+                            <select id="endProvinceId" name="reportQuery.endProvinceId" >
+                                <option value="0">请选择</option>
+                            </select> 省 
+                            <select id="endCityId" name="reportQuery.endCityId" >
+                                    <option value="0">请选择</option>
+                            </select> 市
+                        </div>
+                        <div>查询时间：<input  type="text" class="txtBox" id="startDate" name="reportQuery.createDateStart" value="$!dateTimeUtil.format($!{reportQuery.createDateStart})" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" style="width:130px;"/> ～ <input type="text" id="endDate" class="txtBox" name="reportQuery.createDateEnd" value="$!dateTimeUtil.format($!{reportQuery.createDateEnd})" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" style="width:130px;"/></div>
+                    
+                    </div>
+                    <div class="searchBtn">
+                    	<div class="btn" id="queryBtn">
+                            <div class="icon"><img src="#springUrl('/resource/images/search_icon.png')" /></div>
+                            <div class="txt">查 询</div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            
+            <div class="btnLine">
+            	<div class="btn" id="exportQuery"><div class="icon"><img src="#springUrl('/resource/images/search2_icon.png')" /></div><div class="txt" style="width:76px;">导 出</div></div>
+                
+            </div>
+            
+            
+            
+            <div style="padding:15px; ">
+             <div style=" overflow-x:auto;">
+              <table class="grid2" width="100%">
+                <thead>
+                    <tr>
+                      <th rowspan=2>公司名称</th>
+                      <th rowspan=2>地区</th>
+                      <th colspan=3>干线运输</th>
+                      <th colspan=3>配送</th>
+                      <th colspan=3>安装</th>
+                      
+                    </tr>
+					<tr>
+                      <th>数量</th>
+                      <th>总计金额</th>
+                      <th>平均金额</th>
+                      <th>数量</th>
+                      <th>总计金额</th>
+                      <th>平均金额</th>
+					  <th>数量</th>
+                      <th>总计金额</th>
+                      <th>平均金额</th>
+                    </tr>
+                </thead>
+                <tbody>
+                	#foreach($ReportVo in $page.getList())
+                        <tr>
+                            <td >$!{ReportVo.companyName}</td>
+                            <td >$!{ReportVo.provinceName} $!{ReportVo.cityName}</td>
+                            <td align="right">$!{ReportVo.carrierCount}</td>
+                            <td align="right">#moneyFormat($!{ReportVo.carrierAmountSum})</td>
+                            <td align="right">#moneyFormat($!{ReportVo.carrierAmountAvg})</td>
+                            <td align="right">$!{ReportVo.deliveryCount}</td>
+                            <td align="right">#moneyFormat($!{ReportVo.deliveryAmountSum})</td>
+                            <td align="right">#moneyFormat($!{ReportVo.deliveryAmountAvg})</td>
+                            <td align="right">$!{ReportVo.installCount}</td>
+                            <td align="right">#moneyFormat($!{ReportVo.installAmountSum})</td>
+                            <td align="right">#moneyFormat($!{ReportVo.installAmountAvg})</td>
+                        </tr>
+                    #end
+                    <tr style="display:none;" id="tr_hidden"><td colspan="11" ><font color="red">查询不到数据... </font></td></tr>
+                </tbody>
+            </table>
+            </div>
+            </div>
+            
+            
+             <div class="bottompage">
+                
+                 #page("queryForm") 
+            </div>       
+       </div>   
+    </div> 
+  </div>
+</div>
+
+
+<div style="clear:both;"></div>
+
+
+<script>
+    //加载地区下拉列表
+    function initlocation(){
+        var isLoad=true;
+        var url="#springUrl('/tmsRegion/get.htm')";
+        //目的城市
+        var hxlocation=new HXLocation(
+            "endProvinceId",    //页面上的 省selectID
+            "endCityId",  //页面上的 市 selectID
+            "", ////页面上的 地区selectID
+            #if($!{reportQuery.endProvinceId}) $!{reportQuery.endProvinceId} #else 0 #end,  //省ID
+            #if($!{reportQuery.endCityId}) $!{reportQuery.endCityId} #else 0 #end,  //市ID
+            0, //地区ID
+            url,  //后台提供ajax的controler地址
+            isLoad,//是否自动选择好用户的值，
+            ""//拼接省市区，显示数据的html id
+        );
+        hxlocation.init();
+    }
+    
+    //验证输入查找时间是否符合
+    function  checkInputDate(){
+       var startDate= $('#startDate').attr('value');
+       var endDate= $('#endDate').attr('value');
+       if(startDate&&endDate){
+            return startDate<endDate?true:false;
+       }
+       return true;
+    }
+
+    $(function(){
+    
+         initlocation();
+         
+        //查询按钮
+        $('#queryBtn').click(function(){
+            $("#queryForm").attr("action","#springUrl('/carriageReport/list.htm')");
+            if(!checkInputDate()){
+                CommonUtil.alertinfo("查询时间 起始日期不能大于终止日期！");
+                return false;
+            }
+            CommonUtil.gotoPage("queryForm",1);
+        })
+        
+        //导出按钮
+        $('#exportQuery').click(function(){
+            var exportForm=$("#exportForm");
+            #if($!{page.getCountRecord()}==0)
+                CommonUtil.alertinfo("没有数据不能导出！");
+            #elseif($!{page.getCountRecord()}>2000)
+                CommonUtil.alertinfo("数据>2000条不能导出！");
+            #else
+                $("#queryForm select").each(function(){
+                     var val = $(this).val();
+                    var input = '<input name="'+$(this).attr("name")+'" value="'+val+'" type=hidden>';
+                    exportForm.append(input);
+                });
+                $("#queryForm input").each(function(){
+                    var val = $(this).val();
+                    var input = '<input name="'+$(this).attr("name")+'" value="'+val+'" type=hidden>';
+                    exportForm.append(input);
+                });
+                //console.log(exportForm.html());
+                exportForm.attr("action","#springUrl('/carriageReport/export.htm')");
+                exportForm.submit();
+            #end
+        });
+        
+        #if($page.getCountRecord()==0)
+            $("#tr_hidden").find('div').css({"width":"1685px"});
+            $("#tr_hidden").show();
+        #end
+    
+    })
+
+</script>
+
+</body>
+</html>

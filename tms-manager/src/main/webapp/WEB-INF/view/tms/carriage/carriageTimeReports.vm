@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>运单时效报表</title>
+    #parse("/common/head.vm")
+    <script src="#springUrl('/resource/js/location.js')"></script>
+<script>
+
+function initlocation(){
+    var isLoad=true;
+    var url="#springUrl('/tmsRegion/get.htm')";
+    //目的城市
+    var hxlocation=new HXLocation(
+        "endProvinceSelect",    //页面上的 省selectID
+        "endCitySelect",  //页面上的 市 selectID
+        "", ////页面上的 地区selectID
+        #if($!{reportQuery.endProvinceId}) $!{reportQuery.endProvinceId} #else 0 #end,  //省ID
+        #if($!{reportQuery.endCityId}) $!{reportQuery.endCityId} #else 0 #end,  //市ID
+        0, //地区ID
+        url,  //后台提供ajax的controler地址
+        isLoad,//是否自动选择好用户的值，
+        ""//拼接省市区，显示数据的html id
+    );
+    hxlocation.init();
+}
+
+//验证输入查找时间是否符合
+function  checkInputDate(){
+   var startDate= $('#startDate').attr('value');
+   var endDate= $('#endDate').attr('value');
+   if(startDate&&endDate){
+        return startDate<endDate?true:false;
+   }
+   return true;
+}
+
+$(function(){
+
+     initlocation();
+        
+        //查询按钮
+        $('#queryBtn').click(function(){
+            $("#queryForm").attr("action","#springUrl('/carriageReport/carriTimeList.htm')");
+            if(!checkInputDate()){
+                CommonUtil.alertinfo("查询时间 起始日期不能大于终止日期！");
+                return false;
+            }
+            CommonUtil.gotoPage("queryForm",1);
+        })
+        
+         //导出按钮
+        $('#exportQuery').click(function(){
+            var exportForm=$("#exportForm");
+            #if($!{page.getCountRecord()}==0)
+                CommonUtil.alertinfo("没有数据不能导出！");
+            #elseif($!{page.getCountRecord()}>2000)
+                CommonUtil.alertinfo("数据>2000条不能导出！");
+            #else
+                $("#queryForm select").each(function(){
+                     var val = $(this).val();
+                    var input = '<input name="'+$(this).attr("name")+'" value="'+val+'" type=hidden>';
+                    exportForm.append(input);
+                });
+                $("#queryForm input").each(function(){
+                    var val = $(this).val();
+                    var input = '<input name="'+$(this).attr("name")+'" value="'+val+'" type=hidden>';
+                    exportForm.append(input);
+                });
+                console.log(exportForm.html());
+                exportForm.attr("action","#springUrl('/carriageReport/exportTR.htm')");
+                exportForm.submit();
+            #end
+        });
+        
+        #if($page.getCountRecord()==0)
+            $("#tr_hidden").find('div').css({"width":"1685px"});
+            $("#tr_hidden").show();
+        #end
+})
+
+</script>
+
+
+</head>
+
+<body>
+<input id="topMenuIndex" type="hidden" value="5" />
+<input id="leftMenuIndex" type="hidden" value="5-1-5" /><!--页面序号-->
+
+
+
+<div class="containerH">
+  
+  <div class="storemanageleft"></div><!--左侧菜单导入-->
+  
+
+  <div class="rightdiv" >
+     <div class="contentR" >
+       <div class="tablebox">
+       		<ul class="breadcrumb">
+               <li>首页 <span class="divider">></span></li>
+               <li>物流管理 <span class="divider">></span></li>
+               <li class="active">运单时效报表</li>
+              </ul>
+            <form id="exportForm" action="#springUrl('/carriageReport/exportTR.htm')" method="post" style="visibility:hidden">
+            </form>
+            <form id="queryForm" name="queryForm"  action="#springUrl('/carriageReport/carriTimeList.htm')" method="post" >
+           		<div class="search">
+                  	<div class="title">查询</div>
+                    <div class="searchBox">
+                    	<div>运输公司： 
+                            <select name="reportQuery.carrierCode">
+                               <option value=''>请选择</option>
+                                #foreach($compny in $companies)
+                                    <option value="$!{compny.carrierCode}" #if($!{reportQuery.carrierCode}&&$!{reportQuery.carrierCode}==$!{compny.carrierCode}) selected #end>$!{compny.carrierName}</option>
+                                #end
+                            </select>
+                        </div>
+                        <div>目的城市： 
+                            <select id="endProvinceSelect" name="reportQuery.endProvinceId" >
+                                    <option value="0">请选择</option>
+                            </select> 省 
+                            <select id="endCitySelect" name="reportQuery.endCityId" >
+                                    <option value="0">请选择</option>
+                            </select> 市
+                        </div>
+                        <div>查询时间：<input  type="text" class="txtBox" id="startDate" name="reportQuery.createDateStart" value="$!dateTimeUtil.format($!{reportQuery.createDateStart})" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" style="width:130px;"/> ～ <input type="text" id="endDate" class="txtBox" name="reportQuery.createDateEnd" value="$!dateTimeUtil.format($!{reportQuery.createDateEnd})" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" style="width:130px;"/></div>
+                    
+                    </div>
+                    <div class="searchBtn">
+                    	<div class="btn" id="queryBtn">
+                            <div class="icon"><img src="#springUrl('/resource/images/search_icon.png')" /></div>
+                            <div class="txt">查 询</div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            
+            <div class="btnLine">
+            	<div class="btn" id="exportQuery"><div class="icon"><img src="#springUrl('/resource/images/search2_icon.png')" /></div><div class="txt" style="width:76px;">导 出</div></div>
+                
+            </div>
+            
+            
+            
+            <div style="padding:15px; ">
+             <div style=" overflow-x:auto;">
+              <table class="grid2" width="100%">
+                <thead>
+                    <tr>
+                      <th rowspan=2>公司名称</th>
+                      <th rowspan=2>地区</th>
+					  <th colspan=5>干线运输</th>
+					  <th colspan=5>配送安装</th>
+					  <th colspan=5>合计</th>
+                    </tr>
+					<tr>
+                      <th>数量</th>
+					  <th>3天内（百分比）</th>
+                      <th>7天内（百分比）</th>
+					  <th>15天内（百分比）</th>
+                      <th>超过15天（百分比）</th>
+                      <th>数量</th>
+					  <th>24小时内（百分比）</th>
+                      <th>48小时内（百分比）</th>
+					  <th>72小时内（百分比）</th>
+                      <th>超过72小时（百分比）</th>
+                      <th>数量</th>
+					  <th>3天内（百分比）</th>
+                      <th>7天内（百分比）</th>
+					  <th>15天内（百分比）</th>
+                      <th>超过15天（百分比）</th>
+					</tr>
+                </thead>
+                <tbody>
+                	#foreach($ReportVo in $page.getList())
+                        <tr>
+                            <td>$!{ReportVo.companyName}</td>
+                            <td>$!{ReportVo.provinceName} $!{ReportVo.cityName}</td>
+                            <td>$!{ReportVo.carrierCount}</td>
+                            <td>$!{ReportVo.carrierCountTime1} (#numFormat($!{ReportVo.carrierCount3Perc})%)</td>
+                            <td>$!{ReportVo.carrierCountTime2} (#numFormat($!{ReportVo.carrierCount7Perc})%)</td>
+                            <td>$!{ReportVo.carrierCountTime3} (#numFormat($!{ReportVo.carrierCount15Perc})%)</td>
+                            <td>$!{ReportVo.carrierCountTime4} (#numFormat($!{ReportVo.carrierCountGT15Perc})%)</td>
+                            <td>$!{ReportVo.deliveryCount}</td>
+                            <td>$!{ReportVo.deliveryCountTime1} (#numFormat($!{ReportVo.deliveryCount24Perc})%)</td>
+                            <td>$!{ReportVo.deliveryCountTime2} (#numFormat($!{ReportVo.deliveryCount48Perc})%)</td>
+                            <td>$!{ReportVo.deliveryCountTime3} (#numFormat($!{ReportVo.deliveryCount72Perc})%)</td>
+                            <td>$!{ReportVo.deliveryCountTime4} (#numFormat($!{ReportVo.deliveryCountGT72Perc})%)</td>
+                            <td>$!{ReportVo.allCount}</td>
+                            <td>$!{ReportVo.allCountTime1} (#numFormat($!{ReportVo.allCount3Perc})%)</td>
+                            <td>$!{ReportVo.allCountTime2} (#numFormat($!{ReportVo.allCount7Perc})%)</td>
+                            <td>$!{ReportVo.allCountTime3} (#numFormat($!{ReportVo.allCount15Perc})%)</td>
+                            <td>$!{ReportVo.allCountTime4} (#numFormat($!{ReportVo.allCountGT15Perc})%)</td>
+                        </tr>
+                    #end
+                   <tr style="display:none;" id="tr_hidden"><td colspan="17" ><font color="red">查询不到数据... </font></td></tr>
+                </tbody>
+            </table>
+            </div>
+            </div>
+            
+            
+             <div class="bottompage">
+                
+                 #page("queryForm")
+            </div>       
+       </div>   
+    </div> 
+  </div>
+</div>
+
+
+<div style="clear:both;"></div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>问题单列表</title>
+        #parse("/common/head.vm")
+        <script src="#springUrl('/resource/js/location.js')"></script>
+    </head>
+
+
+</head>
+
+<body>
+
+<div class="containerH">
+  <div class="rightdiv" >
+     <div class="contentR" >
+       <div class="tablebox">
+       		<ul class="breadcrumb">
+               <li>首页 <span class="divider">></span></li>
+               <li>销售订单 <span class="divider">></span></li>
+               <li class="active">问题单列表</li>
+              </ul>
+       
+       
+       		<div class="search">
+                <form id="carriageQuestionQueryFrom" name="carriageQuestionQueryFrom" action="#springUrl('/carriageQuestion/list.htm')" method="post">
+              	<div class="title">查询</div>
+                 <input id="querySortFlag" name="carriageQuestionQuery.sortFlag" value="$!carriageQuestionQuery.sortFlag"  type="hidden" />
+                 <input id="querySortColumn" name="carriageQuestionQuery.sortColumn" value="$!carriageQuestionQuery.sortColumn" type="hidden"  />
+                 <input id="querySortType" name="carriageQuestionQuery.sortType" value="$!carriageQuestionQuery.sortType"  type="hidden"  />
+                
+                <div class="searchBox">
+                	<div>关联运单号： <input type="text" class="txtBox" name="carriageQuestionQuery.carriageSn" value="$!carriageQuestionQuery.carriageSn"/></div>
+                    <div>关联订单号： <input type="text" class="txtBox" name="carriageQuestionQuery.orderSn" value="$!carriageQuestionQuery.orderSn"/></div>
+                    <div>收货人： <input type="text" class="txtBox" name="carriageQuestionQuery.consignee" value="$!carriageQuestionQuery.consignee"/></div>
+                    <div>干线运输公司：  <select name="carriageQuestionQuery.carrierCode" value="$!carriageQuestionQuery.carrierCode">
+                                <option value=''>请选择</option>
+                                #foreach($compny in $companies)
+                                    <option value="$!{compny.carrierCode}" #if($!{carriageQuestionQuery.carrierCode}&&$!{carriageQuestionQuery.carrierCode}==$!{compny.carrierCode}) selected #end>$!{compny.carrierName}</option>
+                                #end
+                     </select></div>
+                    <div>运输单号： <input type="text" class="txtBox" name="carriageQuestionQuery.carrierNumber" value="$!carriageQuestionQuery.carrierNumber"/></div>
+                    <div>发货时间：
+                        <input type="text" style="width:125px;" id="startDate" class="txtBox" name="carriageQuestionQuery.shippingTimeStart" value="$!dateTimeUtil.format($!{carriageQuestionQuery.shippingTimeStart})" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})"/> ～
+                        <input type="text" style="width:125px;" id="endDate" class="txtBox" name="carriageQuestionQuery.shippingTimeEnd" value="$!dateTimeUtil.format($!{carriageQuestionQuery.shippingTimeEnd})" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})"/> 
+                    </div>
+                    <div>问题单原因： 
+                        <select name="carriageQuestionQuery.questionReasonId" value="$!carriageQuestionQuery.questionReasonId"/>
+                            <option value=''>请选择</option>
+                            #foreach($code in $systemCode)
+                                    <option value="$!{code.codeValueCode}" #if($!{carriageQuestionQuery.questionReasonId}&&$!{carriageQuestionQuery.questionReasonId}==$!{code.codeValueCode}) selected #end>$!{code.codeValueName}</option>
+                                #end
+                        </select>
+                    </div>
+                    <div>处理状态：
+                        <select name="carriageQuestionQuery.processStatus" value="$!carriageQuestionQuery.processStatus"/>
+                        <option value='-1'>请选择</option>
+                        <option value="0" #if($!{carriageQuestionQuery.processStatus}&&$!{carriageQuestionQuery.processStatus}=="0") selected #end>未处理</option>
+                        <option value="1" #if($!{carriageQuestionQuery.processStatus}&&$!{carriageQuestionQuery.processStatus}=="1") selected #end>已处理</option>
+                        </select>
+                    </div>
+                              
+                </div>
+                <div class="searchBtn">
+                    <div class="btn" id="fastQueryBtn"><div class="icon"><img src="#springUrl('/resource/images/search_icon.png')" /></div><div class="txt">查 询</div></div>
+                 </div>
+                </form> 
+            </div>
+            
+            
+            
+            
+            <div style="padding:15px; ">
+             <div style=" overflow-x:auto;">
+              <table class="grid" id="settingall" style="margin-top: 0px;overflow-x:visible;">
+                <thead>
+                    <tr>
+                       <th width="150" onclick="sortlist('carriage_sn',this)">运单号</th>
+                      <th width="100" onclick="sortlist('order_sn',this)">订单号</th>
+                      <th width="398">收货信息</th>      
+                      <th width="100" onclick="sortlist('total_qty',this)">商品总数</th>
+                      <th width="100" onclick="sortlist('total_p_volume',this)">箱体积</th>
+                      <th width="100" onclick="sortlist('total_p_weight',this)">箱重量</th>
+                      <th width="100" onclick="sortlist('w_province_id',this)">仓库地址</th>
+                      <th width="100" onclick="sortlist('ci.carrier_code',this)">干线运输公司</th>
+                      <th width="100" onclick="sortlist('ci.delivery_code',this)">配送公司</th>
+                      <th width="100" onclick="sortlist('ci.install_code',this)">安装公司</th>
+                      <th width="100" onclick="sortlist('carrier_number',this)">运输单号</th>
+                      <th width="100" onclick="sortlist('shippment_status',this)">发货状态</th>
+                      <th width="120" onclick="sortlist('shipping_time',this)">发货时间</th>
+                      <th width="120" onclick="sortlist('delivery_time',this)">配送开始时间</th>
+                      <th width="120" onclick="sortlist('receive_time',this)">签收/拒收时间</th>
+                      <th width="100" onclick="sortlist('estimate_city_amount',this)">预计干线运费</th>
+                      <th width="100" onclick="sortlist('real_city_amount',this)">实际干线运费</th>
+                      <th width="100" onclick="sortlist('estimate_district_amount',this)">预计配送运费</th>
+                      <th width="100" onclick="sortlist('real_district_amount',this)">实际配送运费</th>
+                      <th width="100" onclick="sortlist('estimate_install_amount',this)">预计安装费</th>
+                      <th width="100" onclick="sortlist('real_install_amount',this)">实际安装费</th>
+                      <th width="100" onclick="sortlist('total_service_fee',this)">实收服务费</th>
+                      <th width="100" onclick="sortlist('return_visit_status',this)">电话回访状态</th>
+                      <th width="100" onclick="sortlist('lock_operator',this)">操作者</th>
+                      <th width="100" onclick="sortlist('lock_status',this)">是否锁定</th>
+                      <th width="100" onclick="sortlist('cq.process_status',this)">处理状态</th>      
+                      <th width="150" onclick="sortlist('cq.question_reason_id',this)">问题单原因</th>
+                    </tr>
+                </thead>
+                <tbody>
+                     #foreach($carriage in $page.getList())
+                    <tr>
+                         <td><a href="#" onclick="carriageDetail('$!{carriage.carriageSn}')">$!{carriage.carriageSn}</a></td>
+                        <td>$!{carriage.orderSn}</td>
+                        <td style="text-align:center;">$!{carriage.consignee} $!{carriage.provinceName}$!{carriage.cityName}$!{carriage.districtName} $!{carriage.address}</td>
+                        <td style="text-align:center;">$!{carriage.totalQty}</td>
+                        <td style="text-align:center;">#if($!{carriage.totalPVolume}) $!stringUtils.formatPrice(0,$!{carriage.totalPVolume})cm3 #end</td>
+                        <td style="text-align:center;">#if($!{carriage.totalPWeight}) $!stringUtils.formatPrice(0,$!{carriage.totalPWeight})Kg #end</td>
+                        <td style="text-align:center;">$!{carriage.wProvinceName}$!{carriage.wCityName}$!{carriage.wDistrictName}</td>
+                        <td style="text-align:center;">$!{carriage.carrierCodeName}</td>
+                        <td style="text-align:center;">$!{carriage.deliveryCodeName}</td>
+                        <td style="text-align:center;">$!{carriage.installCodeName}</td>
+                        <td style="text-align:center;">$!{carriage.carrierNumber}</td>
+                        <td style="text-align:center;">#if($!{carriage.shippmentStatus}=="0") 待发货
+                            #elseif($!{carriage.shippmentStatus}=="1") 已发货
+                            #elseif($!{carriage.shippmentStatus}=="2") 待配送
+                            #elseif($!{carriage.shippmentStatus}=="3") 配送中
+                            #elseif($!{carriage.shippmentStatus}=="4") 用户签收
+                            #elseif($!{carriage.shippmentStatus}=="5") 用户拒收
+                            #end
+                        </td>
+                        <td>$!dateTimeUtil.format($!{carriage.shippingTime})</td>
+                        <td>$!dateTimeUtil.format($!{carriage.deliveryTime})</td>
+                        <td>$!dateTimeUtil.format($!{carriage.receiveTime})</td>
+                        <td style="text-align:center;">#if($!{carriage.estimateCityAmount}) $!stringUtils.formatPrice(2,$!{carriage.estimateCityAmount})元 #end</td>
+                        <td style="text-align:center;">#if($!{carriage.realCityAmount}) $!stringUtils.formatPrice(2,$!{carriage.realCityAmount})元 #end</td>
+                        <td style="text-align:center;">#if($!{carriage.estimateDistrictAmount}) $!stringUtils.formatPrice(2,$!{carriage.estimateDistrictAmount})元 #end</td>
+                        <td style="text-align:center;">#if($!{carriage.realDistrictAmount}) $!stringUtils.formatPrice(2,$!{carriage.realDistrictAmount})元 #end </td>
+                        <td style="text-align:center;">#if($!{carriage.estimateInstallAmount}) $!stringUtils.formatPrice(2,$!{carriage.estimateInstallAmount})元 #end</td>
+                        <td style="text-align:center;">#if($!{carriage.realInstallAmount}) $!stringUtils.formatPrice(2,$!{carriage.realInstallAmount})元 #end</td>
+                        <td style="text-align:center;">#if($!{carriage.totalServiceFee}) $!stringUtils.formatPrice(2,$!{carriage.totalServiceFee})元 #end</td>
+                        <td style="text-align:center;">#if($!{carriage.returnVisitStatus}=="1") 已回访
+                            #elseif($!{carriage.returnVisitStatus}=="0") 未回访#end</td>
+                        <td style="text-align:center;">$!{carriage.lockOperator}</td>
+                        <td style="text-align:center;">#if($!{carriage.lockStatus}=="0") 否
+                            #elseif($!{carriage.lockStatus}=="1") 是#end</td>
+                        <td style="text-align:center;">#if($!{carriage.processStatus}=="0") 未处理
+                            #elseif($!{carriage.processStatus}=="1") 已处理#end</td>
+                        <td style="text-align:center;">#foreach($code in $systemCode)
+                            #if($!{carriage.questionReasonId}&&$!{carriage.questionReasonId}==$!{code.codeValueCode})$!{code.codeValueName}#end
+                            #end</td>
+                    </tr>
+                    #end
+                    <tr style="display:none;" id="tr_hidden"><td colspan="27" ><font color="red">查询不到数据... </font></td></tr> 
+                </tbody>
+            </table>
+            </div>
+            </div>
+            
+            
+             <div class="bottompage">
+                 #page("carriageQuestionQueryFrom")
+            </div>
+            
+       </div>   
+    </div> 
+  </div>
+</div>
+
+
+<div style="clear:both;"></div>
+<script type="text/javascript">
+            $('#settingall').flexigrid();
+
+            //快速查询按钮
+            $('#fastQueryBtn').click(function(){
+                if(dateCheck()){
+                    $("#carriageQuestionQueryFrom").attr("action","#springUrl('/carriageQuestion/list.htm')");
+                CommonUtil.gotoPage("carriageQuestionQueryFrom",0);
+                }
+            })
+            
+             //时间判断
+           function dateCheck(){
+                var startDate=$('#startDate').attr('value');
+                var endDate=$('#endDate').attr('value');
+                if(startDate!=null&&endDate!=null){
+                    date1 = startDate.replace(/\-/gi,"/");
+                    date2 = endDate.replace(/\-/gi,"/");
+                    var time1 = new Date(date1).getTime();
+                    var time2 = new Date(date2).getTime();
+                    if(time1>time2){
+                        CommonUtil.alertinfo('开始时间大于结束时间，请重新输入');
+                        return false;
+                    }  
+                }
+                return true;
+           }
+          //跳转发货单详细
+           function carriageDetail(carriageSn){
+                  window.location = "#springUrl('/carriageInfo/infoDetail.htm?carriageSn=')"+carriageSn;
+           }
+             jQuery(document).ready(function($) {
+            $('#settingall').flexigrid();
+            
+            init();
+            
+            $(window).resize(function(){
+                init(); 
+            })
+            
+            function init(){
+                    //var bDivH = parseInt($('.tablebox').height()  - $('.breadcrumb').height() - $('.bottompage').height() -223 );
+                    $('.bDiv').css('height','auto');
+                    $('.bDiv').css('overflow-y','hidden');
+            }
+            
+            CommonUtil.initCommonCheckBox();
+
+            #if($page.getCountRecord()==0)
+                $("#tr_hidden").find('div').css({"width":"1685px"});
+                $("#tr_hidden").show();
+            #end
+            });
+            
+           
+            
+            //table排序
+            //排序
+            function sortlist(sortcolumn,obj){
+             #if($!{carriageQuestionQuery.sortFlag})
+        
+            var sortFlag = "$!{carriageQuestionQuery.sortFlag}";
+            $("#querySortColumn").val(sortcolumn);
+            
+            if(sortFlag == "1"){
+                $("#querySortFlag").val("2");
+                $("#querySortType").val("DESC");
+            }
+            if(sortFlag == "2"){
+                $("#querySortFlag").val("1");
+                $("#querySortType").val("ASC");
+            }        
+            #end
+            $("#carriageQueryFrom").attr("action","#springUrl('/carriageQuestion/list.htm')");
+            CommonUtil.gotoPage("carriageQuestionQueryFrom",1);
+    };
+</script>
+
+
+
+</body>
+</html>

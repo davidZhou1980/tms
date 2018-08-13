@@ -1,0 +1,130 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.tms</groupId>
+    <artifactId>tms-api</artifactId>
+    <packaging>jar</packaging>
+    <version>0.0.1</version>
+    <name>tms-api</name>
+    <description>api for tms-core</description>
+
+    <properties>
+        <rsosapi.version>0.0.1</rsosapi.version>
+        <rsoscommon.version>0.0.1</rsoscommon.version>
+        <!-- Generic properties -->
+        <java.version>1.6</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- Logging -->
+        <slf4j.version>1.7.5</slf4j.version>
+        <slf4j-log4j12.version>1.7.2</slf4j-log4j12.version>
+        <log4j.version>1.2.17</log4j.version>
+        <!-- Spring -->
+        <spring-framework.version>3.1.3.RELEASE</spring-framework.version>
+    </properties>
+
+    <dependencies>
+<!--         <dependency> -->
+<!--             <groupId>com.rsos</groupId> -->
+<!--             <artifactId>rsos-api</artifactId> -->
+<!--             <version>${rsosapi.version}</version> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>com.rsos</groupId> -->
+<!--             <artifactId>rsos-common</artifactId> -->
+<!--             <version>${rsoscommon.version}</version> -->
+<!--         </dependency> -->
+        <!-- Logging with SLF4J -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${slf4j-log4j12.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>${log4j.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- SPRING, SPRING, SPRINGITY SPRING -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>${spring-framework.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring-framework.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring-framework.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>${spring-framework.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.simpleframework</groupId>
+            <artifactId>simple-xml</artifactId>
+            <version>2.7.1</version>
+        </dependency>
+    </dependencies>
+
+    <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <url>http://192.168.1.252:8081/nexus/content/repositories/releases</url>
+        </repository>
+    </distributionManagement>
+
+    <build>
+        <finalName>tms-api</finalName>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.13</version>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
